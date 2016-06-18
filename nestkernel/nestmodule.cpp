@@ -523,26 +523,28 @@ NestModule::CopyModel_l_l_DFunction::execute( SLIInterpreter* i ) const
    Create generates n new network objects of the supplied model
    type. If n is not given, a single node is created. The objects
    are added as children of the current working node. params is a
-   dictsionary with parameters for the new nodes.
+   dictionary with parameters for the new nodes.
 
    SeeAlso: modeldict, ChangeSubnet
 */
 void
-NestModule::Create_l_iFunction::execute( SLIInterpreter* i ) const
+NestModule::Create_l_i_DFunction::execute( SLIInterpreter* i ) const
 {
   // check for stack load
-  i->assert_stack_load( 2 );
+  i->assert_stack_load( 3 );
 
   // extract arguments
-  const long n_nodes = getValue< long >( i->OStack.pick( 0 ) );
-  if ( n_nodes <= 0 )
-    throw RangeCheck();
+  const DictionaryDatum params =
+    getValue< DictionaryDatum >( i->OStack.pick( 0 ) );
 
-  const std::string modname = getValue< std::string >( i->OStack.pick( 1 ) );
+  const long n_nodes = getValue< long >( i->OStack.pick( 1 ) );
 
-  const long last_node_id = create( modname, n_nodes );
+  const std::string model_name = getValue< std::string >( i->OStack.pick( 2 ) );
 
-  i->OStack.pop( 2 );
+  // create nodes
+  const long last_node_id = create( model_name, n_nodes, params );
+
+  i->OStack.pop( 3 );
   i->OStack.push( last_node_id );
   i->EStack.pop();
 }
@@ -1969,7 +1971,7 @@ NestModule::init( SLIInterpreter* i )
   i->createcommand( "SetDefaults_l_D", &setdefaults_l_Dfunction );
   i->createcommand( "GetDefaults_l", &getdefaults_lfunction );
 
-  i->createcommand( "Create_l_i", &create_l_ifunction );
+  i->createcommand( "Create_l_i_D", &create_l_i_Dfunction );
 
   i->createcommand( "Connect_i_i_l", &connect_i_i_lfunction );
   i->createcommand( "Connect_i_i_d_d_l", &connect_i_i_d_d_lfunction );

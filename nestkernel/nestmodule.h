@@ -231,11 +231,11 @@ public:
     void execute( SLIInterpreter* ) const;
   } simulatefunction;
 
-  class Create_l_iFunction : public SLIFunction
+  class Create_l_i_DFunction : public SLIFunction
   {
   public:
     void execute( SLIInterpreter* ) const;
-  } create_l_ifunction;
+  } create_l_i_Dfunction;
 
   class RestoreNodes_aFunction : public SLIFunction
   {

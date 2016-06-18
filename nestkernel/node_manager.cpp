@@ -179,6 +179,55 @@ NodeManager::get_status( index idx )
   return d;
 }
 
+index
+NodeManager::create_nodes( const Name& model_name,
+  const index n_nodes,
+  const DictionaryDatum& params )
+{
+  if ( n_nodes == 0 )
+  {
+    throw BadParameter( "Number of nodes must be strictly positive." );
+  }
+
+  const Token model =
+    kernel().model_manager.get_modeldict()->lookup( model_name );
+  if ( model.empty() )
+  {
+    throw UnknownModelName( model_name );
+  }
+
+  // we store the current defaults to reset them after creation of
+  // nodes. we only store values of parameters that exist in params.
+  const DictionaryDatum tmp_params = get_model_defaults( model_name );
+  Dictionary default_params;
+  for ( Dictionary::const_iterator it = params->begin(); it != params->end();
+        ++it )
+  {
+    // if the parameter is not part of the default parameters it must
+    // be an invalid parameter name
+    if ( not tmp_params->known( it->first ) )
+    {
+      throw BadParameter(
+        String::compose( "Unknown parameter: %1", it->first ) );
+    }
+    else
+    {
+      default_params.insert( it->first, ( *tmp_params )[ it->first ] );
+    }
+  }
+
+  // change defaults of this model
+  kernel().model_manager.set_model_defaults( model_name, params );
+  // create nodes
+  const index model_id = static_cast< index >( model );
+  const index last_node_id =
+    kernel().node_manager.add_node( model_id, n_nodes );
+  // reset defaults to previous values
+  kernel().model_manager.set_model_defaults( model_name, default_params );
+
+  return last_node_id;
+}
+
 index NodeManager::add_node( index mod, long_t n ) // no_p
 {
   assert( current_ != 0 );

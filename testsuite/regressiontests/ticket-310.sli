@@ -39,8 +39,10 @@
 
 /* The following models will not be tested:
    iaf_cxhk_2008  ---  spikes only on explicit positive threshold crossings
+   correlomatrix_detector --- does not have a membrane potential
+   correlospinmatrix_detector --- does not have a membrane potential
 */
-/skip_list [ /iaf_chxk_2008 /correlospinmatrix_detector ] def
+/skip_list [ /iaf_chxk_2008 /correlomatrix_detector /correlospinmatrix_detector ] def
 
 {
   modeldict keys {

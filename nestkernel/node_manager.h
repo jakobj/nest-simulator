@@ -74,6 +74,13 @@ public:
   void set_status( index, const DictionaryDatum& );
 
   /**
+   * Creates nodes of a single type and sets parameters.
+   */
+  index create_nodes( const Name& model_name,
+    const index n_nodes,
+    const DictionaryDatum& params );
+
+  /**
    * Add a number of nodes to the network.
    * This function creates n Node objects of Model m and adds them
    * to the Network at the current position.

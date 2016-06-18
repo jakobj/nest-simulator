@@ -191,22 +191,11 @@ get_connection_status( const ConnectionDatum& conn )
 }
 
 index
-create( const Name& model_name, const index n_nodes )
+create( const Name& model_name,
+  const index n_nodes,
+  const DictionaryDatum& params )
 {
-  if ( n_nodes == 0 )
-  {
-    throw RangeCheck();
-  }
-
-  const Token model =
-    kernel().model_manager.get_modeldict()->lookup( model_name );
-  if ( model.empty() )
-    throw UnknownModelName( model_name );
-
-  // create
-  const index model_id = static_cast< index >( model );
-
-  return kernel().node_manager.add_node( model_id, n_nodes );
+  return kernel().node_manager.create_nodes( model_name, n_nodes, params );
 }
 
 void

@@ -1,0 +1,162 @@
+/*
+ *  test_create.sli
+ *
+ *  This file is part of NEST.
+ *
+ *  Copyright (C) 2004 The NEST Initiative
+ *
+ *  NEST is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  NEST is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with NEST.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+/* BeginDocumentation
+   Name: testsuite::test_create - test correct creation of nodes
+
+   Synopsis: (test_create) run
+
+   Description:
+
+   This test creates nodes in different variants and checks if parameters
+   are correctly set and defaults unchanged.
+
+   Remarks:
+
+   FirstVersion: June 2016
+   Author: Jakob Jordan
+   SeeAlso: Create
+*/
+
+(unittest) run
+/unittest using
+
+M_ERROR setverbosity
+
+% PARAMETERS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+/V_th_val 1.4142 def
+/V_th_default_val -31.4159 def
+/model /iaf_psc_delta def
+
+% HELPER %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% removes values which can not be compared to the default dict
+/CleanDict [/dictionarytype]
+{
+  /status_dict Set
+  status_dict /global_id undef
+  status_dict /local_id undef
+  status_dict /parent undef
+  status_dict /synaptic_elements undef
+  status_dict /vp undef
+  status_dict /available undef
+  status_dict /capacity undef
+  status_dict /type_id undef
+  status_dict /elementsize undef
+  status_dict /instantiations undef
+  status_dict
+ } def
+
+% TESTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+(testing Create_l)=
+{
+  ResetKernel
+  model << /V_th V_th_default_val >> SetDefaults
+  /default_params model GetDefaults def
+  /n
+    model Create
+  def
+  /params n GetStatus def
+  % 1st part: check parameters are the same as the defaults
+  params CleanDict default_params CleanDict EqualQ
+  % 2nd part: check if defaults were untouched
+  /new_default_params model GetDefaults def
+  default_params CleanDict new_default_params CleanDict EqualQ
+  and % return true only if both parts of the test return true
+} assert_or_die
+
+(testing Create_l_i)=
+{
+  ResetKernel
+  model << /V_th V_th_default_val >> SetDefaults
+  /default_params model GetDefaults def
+  /n
+    model 1 Create
+  def
+  /params n GetStatus def
+  % 1st part: check parameters are the same as the defaults
+  params CleanDict default_params CleanDict EqualQ
+  % 2nd part: check if defaults were untouched
+  /new_default_params model GetDefaults def
+  default_params CleanDict new_default_params CleanDict EqualQ
+  and % return true only if both parts of the test return true  
+} assert_or_die
+
+(testing Create_l_D)=
+{
+  ResetKernel
+  model << /V_th V_th_default_val >> SetDefaults
+  /default_params model GetDefaults def
+  /n
+    model << /V_th V_th_val >> Create
+  def
+  /params n GetStatus def
+  % 1st part: check if parameter was set correctly
+  params /V_th get V_th_val sub abs 10 -10 pow lt
+  % 2nd part: check if other parameters were untouched
+  params /V_th undef
+  default_params CleanDict params CleanDict SubsetQ
+  % 3rd part: check if defaults were untouched
+  /new_default_params model GetDefaults def
+  default_params CleanDict new_default_params CleanDict EqualQ
+  % and and % return true only if all three parts of the test return true
+} assert_or_die
+
+(testing Create_l_i_D)=
+{
+  ResetKernel
+  model << /V_th V_th_default_val >> SetDefaults
+  /default_params model GetDefaults def
+  /n
+    model 1 << /V_th V_th_val >> Create
+  def
+  /params n GetStatus def
+  % 1st part: check if parameter was set correctly
+  params /V_th get V_th_val sub abs 10 -10 pow lt
+  % 2nd part: check if other parameters were untouched
+  params /V_th undef
+  default_params CleanDict params CleanDict SubsetQ
+  % 3rd part: check if defaults were untouched
+  /new_default_params model GetDefaults def
+  default_params CleanDict new_default_params CleanDict EqualQ
+  and and % return true only if all three parts of the test return true
+} assert_or_die
+
+(testing fail for unknown model)=
+{
+  ResetKernel
+  /thisisnotamodel Create
+} fail_or_die
+
+(testing fail for unknown parameter)=
+{
+  ResetKernel
+  /n
+    model << /notaparameter 3.33 >> Create
+  def
+} fail_or_die
+
+(testing fail on zero nodes)=
+{
+  ResetKernel
+  model 0 Create
+} fail_or_die

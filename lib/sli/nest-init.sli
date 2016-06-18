@@ -149,7 +149,12 @@ def
 
 /Create_l
 {
-  1 Create_l_i
+  1 << >> Create_l_i_D
+} def
+
+/Create_l_i
+{
+  << >> Create_l_i_D
 } def
 
 /Create_l_D
@@ -157,34 +162,11 @@ def
   1 exch Create_l_i_D
 } def
 
-/Create_l_i_D
-{
-  << >> begin
-
-    /params Set
-    /n Set
-    /model Set
-
-    % Only store the old parameters that are present in params.
-    model GetDefaults /oldparams Set
-    /tmp << >> def
-    % get implicitly checks if params contains 'illegal' keys
-    params keys { /key Set tmp key oldparams key get put } forall
-    tmp /oldparams Set
-
-    model params SetDefaults
-    model n Create_l_i
-    model oldparams SetDefaults
-
-  end % local namespace
-} def
-
-
 /Create trie
   [/literaltype                             ] /Create_l     load addtotrie
   [/literaltype /integertype                ] /Create_l_i   load addtotrie
   [/literaltype              /dictionarytype] /Create_l_D   load addtotrie
-  [/literaltype /integertype /dictionarytype] /Create_l_i_D load addtotrie
+  [/literaltype /integertype /dictionarytype] { Create_l_i_D } bind addtotrie
 def
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
