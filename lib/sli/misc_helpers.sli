@@ -1293,6 +1293,39 @@ SeeAlso: page
   %gname DeleteFile pop 
 } SLIFunctionWrapper
 
+%----------------------------------------------------------------------------
+/* BeginDocumentation
+Name: EqualQ
+
+Synopsis: dict dict EqualQ -> bool
+
+Description: Check if two dictionaries contain identical key/value
+pairs.
+
+Examples: << /a 1.42 >> << /a 1.42 >> EqualQ -> true
+          << /a 1.42 >> << /a 3.14 >> EqualQ -> false
+          << /a 1.42 /b 3.14 >> << /a 1.42 >> EqualQ -> false
+          << /a 1.42 >> << /a 1.42 /b 3.14 >> EqualQ -> false
+
+Author: Jakob Jordan
+
+FirstVersion: June 2016
+
+SeeAlso:
+*/
+
+% returns true if both dictionaries have the same key/value pairs
+/EqualQ [/dictionarytype /dictionarytype]
+{
+  /d2 Set /d1 Set
+  d1 d2 SubsetQ
+  d2 d1 SubsetQ
+  and
+} bind def
+
+/EqualQ trie
+[/dictionarytype /dictionarytype] /EqualQ load addtotrie
+def
 
 /*
 %% NOTE: There must be a carriage return after the last line in each file, i.e., here:
