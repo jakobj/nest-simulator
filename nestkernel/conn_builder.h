@@ -52,7 +52,7 @@
 namespace nest
 {
 class Node;
-class ConnParameter;
+class Parameter;
 
 /**
  * Abstract base class for ConnBuilders.
@@ -161,7 +161,7 @@ protected:
   std::string post_synaptic_element_name;
 
 private:
-  typedef std::map< Name, ConnParameter* > ConnParameterMap;
+  typedef std::map< Name, Parameter* > ConnParameterMap;
 
   index synapse_model_;
 
@@ -175,8 +175,8 @@ private:
   bool default_delay_;
 
   // null-pointer indicates that default be used
-  ConnParameter* weight_;
-  ConnParameter* delay_;
+  Parameter* weight_;
+  Parameter* delay_;
 
   //! all other parameters, mapping name to value representation
   ConnParameterMap synapse_params_;
@@ -185,7 +185,7 @@ private:
   std::vector< DictionaryDatum > param_dicts_;
 
   //! pointers to connection parameters specified as arrays
-  std::vector< ConnParameter* > parameters_requiring_skipping_;
+  std::vector< Parameter* > parameters_requiring_skipping_;
 
   /**
    * Collects all array paramters in a vector.
@@ -194,7 +194,7 @@ private:
    * ConnParameters. This vector will be exploited in some connection
    * routines to ensuring thread-safety.
    */
-  void register_parameters_requiring_skipping_( ConnParameter& param );
+  void register_parameters_requiring_skipping_( Parameter& param );
 
   // check for synapse specific errors or warnings
   // This is a temporary function which should be removed once all parameter

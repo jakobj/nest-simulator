@@ -59,7 +59,7 @@ set( nestkernel_sources
     stimulating_device.h
     target_identifier.h
     sparse_node_array.h sparse_node_array.cpp
-    conn_parameter.h conn_parameter.cpp
+    parameter.h parameter.cpp
     conn_builder.h conn_builder.cpp
     conn_builder_factory.h
     music_event_handler.h music_event_handler.cpp

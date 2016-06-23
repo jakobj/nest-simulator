@@ -34,7 +34,7 @@
 
 // Includes from nestkernel:
 #include "conn_builder.h"
-#include "conn_parameter.h"
+#include "parameter.h"
 #include "connector_base.h"
 #include "connector_model.h"
 #include "kernel_manager.h"

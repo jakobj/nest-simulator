@@ -1,5 +1,5 @@
 /*
- *  conn_parameter.h
+ *  parameter.h
  *
  *  This file is part of NEST.
  *
@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef CONN_PARAMETER_H
-#define CONN_PARAMETER_H
+#ifndef PARAMETER_H
+#define PARAMETER_H
 
 // C++ includes:
 #include <limits>
@@ -38,7 +38,7 @@
 #include "token.h"
 
 /**
- * Base class for parameters provided to connection routines.
+ * Base class for parameters provided to create and connection routines.
  *
  * Principles for these parameters are
  * - Each parameter is a single scalar value.
@@ -52,15 +52,15 @@
 namespace nest
 {
 
-class ConnParameter
+class Parameter
 {
 
 public:
-  ConnParameter()
+  Parameter()
   {
   }
 
-  virtual ~ConnParameter()
+  virtual ~Parameter()
   {
   }
 
@@ -106,7 +106,7 @@ public:
   * @param nthread number of threads
   * required to fix number pointers to the iterator (one for each thread)
   */
-  static ConnParameter* create( const Token&, const size_t );
+  static Parameter* create( const Token&, const size_t );
 };
 
 
@@ -115,7 +115,7 @@ public:
  *
  * On each request, it returns the same value.
  */
-class ScalarDoubleParameter : public ConnParameter
+class ScalarDoubleParameter : public Parameter
 {
 public:
   ScalarDoubleParameter( double value, const size_t )
@@ -133,7 +133,7 @@ public:
   value_int( thread, librandom::RngPtr& ) const
   {
     throw KernelException(
-      "ConnParameter calls value function with false return type." );
+      "Parameter calls value function with false return type." );
   }
 
   inline bool
@@ -156,7 +156,7 @@ private:
  *
  * On each request, it returns the same value.
  */
-class ScalarIntegerParameter : public ConnParameter
+class ScalarIntegerParameter : public Parameter
 {
 public:
   ScalarIntegerParameter( long_t value, const size_t )
@@ -168,7 +168,7 @@ public:
   value_double( thread, librandom::RngPtr& ) const
   {
     throw KernelException(
-      "ConnParameter calls value function with false return type." );
+      "Parameter calls value function with false return type." );
   }
 
   long_t
@@ -208,7 +208,7 @@ private:
  *   throws an error.
  */
 
-class ArrayDoubleParameter : public ConnParameter
+class ArrayDoubleParameter : public Parameter
 {
 public:
   ArrayDoubleParameter( const std::vector< double >& values,
@@ -246,7 +246,7 @@ public:
   value_int( thread, librandom::RngPtr& ) const
   {
     throw KernelException(
-      "ConnParameter calls value function with false return type." );
+      "Parameter calls value function with false return type." );
   }
 
   inline bool
@@ -287,7 +287,7 @@ private:
  *   throws an error.
  */
 
-class ArrayIntegerParameter : public ConnParameter
+class ArrayIntegerParameter : public Parameter
 {
 public:
   ArrayIntegerParameter( const std::vector< long_t >& values,
@@ -325,7 +325,7 @@ public:
   value_double( thread, librandom::RngPtr& ) const
   {
     throw KernelException(
-      "ConnParameter calls value function with false return type." );
+      "Parameter calls value function with false return type." );
   }
 
   inline bool
@@ -356,7 +356,7 @@ private:
  *
  * On each request, it returns a new value drawn from the given deviate.
  */
-class RandomParameter : public ConnParameter
+class RandomParameter : public Parameter
 {
 public:
   RandomParameter( const DictionaryDatum&, const size_t );
@@ -385,4 +385,4 @@ private:
 
 } // namespace nest
 
-#endif
+#endif // PARAMETER_H

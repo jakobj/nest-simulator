@@ -35,7 +35,7 @@
 #include "normal_randomdev.h"
 
 // Includes from nestkernel:
-#include "conn_parameter.h"
+#include "parameter.h"
 #include "exceptions.h"
 #include "kernel_manager.h"
 #include "nest_names.h"
@@ -110,23 +110,23 @@ nest::ConnBuilder::ConnBuilder( const GIDCollection& sources,
   if ( !default_weight_and_delay_ )
   {
     weight_ = syn_spec->known( names::weight )
-      ? ConnParameter::create( ( *syn_spec )[ names::weight ],
+      ? Parameter::create( ( *syn_spec )[ names::weight ],
           kernel().vp_manager.get_num_threads() )
-      : ConnParameter::create( ( *syn_defaults )[ names::weight ],
+      : Parameter::create( ( *syn_defaults )[ names::weight ],
           kernel().vp_manager.get_num_threads() );
     register_parameters_requiring_skipping_( *weight_ );
     delay_ = syn_spec->known( names::delay )
-      ? ConnParameter::create(
+      ? Parameter::create(
           ( *syn_spec )[ names::delay ], kernel().vp_manager.get_num_threads() )
-      : ConnParameter::create( ( *syn_defaults )[ names::delay ],
+      : Parameter::create( ( *syn_defaults )[ names::delay ],
           kernel().vp_manager.get_num_threads() );
   }
   else if ( default_weight_ )
   {
     delay_ = syn_spec->known( names::delay )
-      ? ConnParameter::create(
+      ? Parameter::create(
           ( *syn_spec )[ names::delay ], kernel().vp_manager.get_num_threads() )
-      : ConnParameter::create( ( *syn_defaults )[ names::delay ],
+      : Parameter::create( ( *syn_defaults )[ names::delay ],
           kernel().vp_manager.get_num_threads() );
   }
   register_parameters_requiring_skipping_( *delay_ );
@@ -178,7 +178,7 @@ nest::ConnBuilder::ConnBuilder( const GIDCollection& sources,
 
     if ( syn_spec->known( param_name ) )
     {
-      synapse_params_[ param_name ] = ConnParameter::create(
+      synapse_params_[ param_name ] = Parameter::create(
         ( *syn_spec )[ param_name ], kernel().vp_manager.get_num_threads() );
       register_parameters_requiring_skipping_( *synapse_params_[ param_name ] );
     }
@@ -233,15 +233,14 @@ nest::ConnBuilder::~ConnBuilder()
 {
   delete weight_;
   delete delay_;
-  for ( std::map< Name, ConnParameter* >::iterator it = synapse_params_.begin();
+  for ( std::map< Name, Parameter* >::iterator it = synapse_params_.begin();
         it != synapse_params_.end();
         ++it )
     delete it->second;
 }
 
 inline void
-nest::ConnBuilder::register_parameters_requiring_skipping_(
-  ConnParameter& param )
+nest::ConnBuilder::register_parameters_requiring_skipping_( Parameter& param )
 {
   if ( param.is_array() )
   {
@@ -553,7 +552,7 @@ nest::ConnBuilder::single_connect_( index sgid,
 inline void
 nest::ConnBuilder::skip_conn_parameter_( thread target_thread )
 {
-  for ( std::vector< ConnParameter* >::iterator it =
+  for ( std::vector< Parameter* >::iterator it =
           parameters_requiring_skipping_.begin();
         it != parameters_requiring_skipping_.end();
         ++it )

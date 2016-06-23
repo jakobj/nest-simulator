@@ -1,5 +1,5 @@
 /*
- *  conn_parameter.cpp
+ *  parameter.cpp
  *
  *  This file is part of NEST.
  *
@@ -20,7 +20,7 @@
  *
  */
 
-#include "conn_parameter.h"
+#include "parameter.h"
 
 // Includes from librandom:
 #include "random_datums.h"
@@ -35,8 +35,8 @@
 #include "integerdatum.h"
 #include "tokenutils.h"
 
-nest::ConnParameter*
-nest::ConnParameter::create( const Token& t, const size_t nthreads )
+nest::Parameter*
+nest::Parameter::create( const Token& t, const size_t nthreads )
 {
   // Code grabbed from TopologyModule::create_parameter()
   // See there for a more general solution
