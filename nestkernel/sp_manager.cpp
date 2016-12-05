@@ -770,6 +770,7 @@ void
 nest::SPManager::global_shuffle( std::vector< index >& v, size_t n )
 {
   assert( n <= v.size() );
+  std::sort( v.begin(), v.end() );
 
   // shuffle res using the global random number generator
   uint N = v.size();
