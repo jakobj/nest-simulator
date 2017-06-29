@@ -132,6 +132,12 @@ extern const Name delta_tau; //!< Specific to correlation_and correlomatrix
 extern const Name Delta_V;   //!< Specific to gif models
 extern const Name delta_u;   //!< Specific to population point process model
                              //!< (pp_pop_psc_delta)
+extern const Name denone_curr; //!< Used by iaf_cond_exp_mc
+extern const Name denone_exc; //!< Used by iaf_cond_exp_mc
+extern const Name denone_inh; //!< Used by iaf_cond_exp_mc
+extern const Name dentwo_curr; //!< Used by iaf_cond_exp_mc
+extern const Name dentwo_exc; //!< Used by iaf_cond_exp_mc
+extern const Name dentwo_inh; //!< Used by iaf_cond_exp_mc
 extern const Name dg;        //!< Derivative of the conductance
 extern const Name dg_ex;     //!< Derivative of the excitatory conductance
 extern const Name dg_in;     //!< Derivative of the inhibitory conductance
@@ -218,6 +224,10 @@ extern const Name g_pd;          //!< Used by iaf_cond_alpha_mc
 extern const Name g_rr;          //!< Other adaptation
 extern const Name g_sfa;         //!< Other adaptation
 extern const Name g_sp;          //!< Used by iaf_cond_alpha_mc
+extern const Name g_sv;          //!< Used by iaf_cond_alpha_mc
+extern const Name g_vs;          //!< Used by iaf_cond_alpha_mc
+extern const Name g_st;          //!< Used by iaf_cond_alpha_mc
+extern const Name g_ts;          //!< Used by iaf_cond_alpha_mc
 extern const Name GABA_A;
 extern const Name GABA_B;
 extern const Name gamma;         //!< Specific to mirollo_strogatz_ps

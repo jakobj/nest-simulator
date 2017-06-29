@@ -62,6 +62,7 @@
 #include "iaf_cond_alpha_mc.h"
 #include "iaf_cond_exp.h"
 #include "iaf_cond_exp_sfa_rr.h"
+#include "iaf_cond_exp_mc.h"
 #include "iaf_neuron.h"
 #include "iaf_psc_alpha.h"
 #include "iaf_psc_alpha_multisynapse.h"
@@ -329,6 +330,8 @@ ModelsModule::init( SLIInterpreter* )
   kernel().model_manager.register_node_model< iaf_cond_exp >( "iaf_cond_exp" );
   kernel().model_manager.register_node_model< iaf_cond_exp_sfa_rr >(
     "iaf_cond_exp_sfa_rr" );
+  kernel().model_manager.register_node_model< iaf_cond_exp_mc >(
+    "iaf_cond_exp_mc" );
   kernel().model_manager.register_node_model< iaf_cond_alpha_mc >(
     "iaf_cond_alpha_mc" );
   kernel().model_manager.register_node_model< hh_psc_alpha >( "hh_psc_alpha" );
