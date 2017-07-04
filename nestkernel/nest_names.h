@@ -224,10 +224,11 @@ extern const Name g_pd;          //!< Used by iaf_cond_alpha_mc
 extern const Name g_rr;          //!< Other adaptation
 extern const Name g_sfa;         //!< Other adaptation
 extern const Name g_sp;          //!< Used by iaf_cond_alpha_mc
-extern const Name g_sv;          //!< Used by iaf_cond_alpha_mc
-extern const Name g_vs;          //!< Used by iaf_cond_alpha_mc
-extern const Name g_st;          //!< Used by iaf_cond_alpha_mc
 extern const Name g_ts;          //!< Used by iaf_cond_alpha_mc
+extern const Name g_denone_soma;          //!< Used by iaf_cond_alpha_mc
+extern const Name g_soma_denone;          //!< Used by iaf_cond_alpha_mc
+extern const Name g_dentwo_soma;          //!< Used by iaf_cond_alpha_mc
+extern const Name g_soma_dentwo;          //!< Used by iaf_cond_alpha_mc
 extern const Name GABA_A;
 extern const Name GABA_B;
 extern const Name gamma;         //!< Specific to mirollo_strogatz_ps

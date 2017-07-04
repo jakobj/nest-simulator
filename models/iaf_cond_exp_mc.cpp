@@ -77,33 +77,33 @@ template <>
 void
 RecordablesMap< iaf_cond_exp_mc >::create()
 {
-  insert_( Name( "V_m.s" ),
+  insert_( Name( "V_m.soma" ),
     &iaf_cond_exp_mc::get_y_elem_< iaf_cond_exp_mc::State_::V_M,
       iaf_cond_exp_mc::SOMA > );
-  insert_( Name( "g_ex.s" ),
+  insert_( Name( "g_ex.soma" ),
     &iaf_cond_exp_mc::get_y_elem_< iaf_cond_exp_mc::State_::G_EXC,
       iaf_cond_exp_mc::SOMA > );
-  insert_( Name( "g_in.s" ),
+  insert_( Name( "g_in.soma" ),
     &iaf_cond_exp_mc::get_y_elem_< iaf_cond_exp_mc::State_::G_INH,
       iaf_cond_exp_mc::SOMA > );
 
-  insert_( Name( "V_m.v" ),
+  insert_( Name( "V_m.denone" ),
     &iaf_cond_exp_mc::get_y_elem_< iaf_cond_exp_mc::State_::V_M,
       iaf_cond_exp_mc::DENONE > );
-  insert_( Name( "g_ex.v" ),
+  insert_( Name( "g_ex.denone" ),
     &iaf_cond_exp_mc::get_y_elem_< iaf_cond_exp_mc::State_::G_EXC,
       iaf_cond_exp_mc::DENONE > );
-  insert_( Name( "g_in.v" ),
+  insert_( Name( "g_in.denone" ),
     &iaf_cond_exp_mc::get_y_elem_< iaf_cond_exp_mc::State_::G_INH,
       iaf_cond_exp_mc::DENONE > );
 
-  insert_( Name( "V_m.t" ),
+  insert_( Name( "V_m.dentwo" ),
     &iaf_cond_exp_mc::get_y_elem_< iaf_cond_exp_mc::State_::V_M,
       iaf_cond_exp_mc::DENTWO > );
-  insert_( Name( "g_ex.t" ),
+  insert_( Name( "g_ex.dentwo" ),
     &iaf_cond_exp_mc::get_y_elem_< iaf_cond_exp_mc::State_::G_EXC,
       iaf_cond_exp_mc::DENTWO > );
-  insert_( Name( "g_in.t" ),
+  insert_( Name( "g_in.dentwo" ),
     &iaf_cond_exp_mc::get_y_elem_< iaf_cond_exp_mc::State_::G_INH,
       iaf_cond_exp_mc::DENTWO > );
 
@@ -166,6 +166,18 @@ nest::iaf_cond_exp_mc_dynamics( double,
     {
       I_conn = node.P_.g_conn[ 0 ] * ( V - y[ S::idx( 1, S::V_M ) ] ) + node.P_.g_conn[ 2 ] * ( V - y[ S::idx( 2, S::V_M ) ] );
     }
+    else if ( n == N::DENONE )
+    {
+      I_conn = node.P_.g_conn[ 1 ] * ( V - y[ S::idx( 0, S::V_M ) ] );
+    }
+    else if ( n == N::DENTWO )
+    {
+      I_conn = node.P_.g_conn[ 3 ] * ( V - y[ S::idx( 0, S::V_M ) ] );
+    }
+    else
+    {
+      assert( false );
+    }
 
     // derivatives
     // membrane potential
@@ -202,8 +214,8 @@ nest::iaf_cond_exp_mc::Parameters_::Parameters_()
 {
   // conductances between compartments
   g_conn[ SOMA ] = 2.5; // nS, soma-denone
-  g_conn[ SOMA + 1 ] = 2.5; // nS, denone-soma
-  g_conn[ SOMA + 2 ] = 1.0; // nS, soma-dentwo
+  g_conn[ SOMA + 1 ] = 1.0; // nS, denone-soma
+  g_conn[ SOMA + 2 ] = 2.5; // nS, soma-dentwo
   g_conn[ SOMA + 3 ] = 1.0; // nS, dentwo-soma
 
   // soma parameters
@@ -360,10 +372,10 @@ nest::iaf_cond_exp_mc::Parameters_::get( DictionaryDatum& d ) const
   def< double >( d, names::V_reset, V_reset );
   def< double >( d, names::t_ref, t_ref );
 
-  def< double >( d, names::g_sv, g_conn[ SOMA ] );
-  def< double >( d, names::g_vs, g_conn[ SOMA + 1 ] );
-  def< double >( d, names::g_st, g_conn[ SOMA + 2 ] );
-  def< double >( d, names::g_ts, g_conn[ SOMA + 3 ] );
+  def< double >( d, names::g_soma_denone, g_conn[ SOMA ] );
+  def< double >( d, names::g_denone_soma, g_conn[ SOMA + 1 ] );
+  def< double >( d, names::g_soma_dentwo, g_conn[ SOMA + 2 ] );
+  def< double >( d, names::g_dentwo_soma, g_conn[ SOMA + 3 ] );
 
   // create subdictionaries for per-compartment parameters
   for ( size_t n = 0; n < NCOMP; ++n )
@@ -391,10 +403,10 @@ nest::iaf_cond_exp_mc::Parameters_::set( const DictionaryDatum& d )
   updateValue< double >( d, names::V_reset, V_reset );
   updateValue< double >( d, names::t_ref, t_ref );
 
-  updateValue< double >( d, Name( names::g_sv ), g_conn[ SOMA ] );
-  updateValue< double >( d, Name( names::g_vs ), g_conn[ SOMA + 1 ] );
-  updateValue< double >( d, Name( names::g_st ), g_conn[ SOMA + 2 ] );
-  updateValue< double >( d, Name( names::g_ts ), g_conn[ SOMA + 3 ] );
+  updateValue< double >( d, Name( names::g_soma_denone ), g_conn[ SOMA ] );
+  updateValue< double >( d, Name( names::g_denone_soma ), g_conn[ SOMA + 1 ] );
+  updateValue< double >( d, Name( names::g_soma_dentwo ), g_conn[ SOMA + 2 ] );
+  updateValue< double >( d, Name( names::g_dentwo_soma ), g_conn[ SOMA + 3 ] );
 
   // extract from sub-dictionaries
   for ( size_t n = 0; n < NCOMP; ++n )

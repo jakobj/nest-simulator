@@ -61,15 +61,15 @@ The model has three compartments: soma, and two dendritic compartments
 labeled as s, v, and t, respectively. Compartments are connected through
 passive conductances as follows
 
-C_m.s d/dt V_m.s = ... - g_sv ( V_m.s - V_m.v ) - g_st ( V_m.s - V_m.t )
+C_m.soma d/dt V_m.soma = ... - g_sv ( V_m.soma - V_m.denone ) - g_st ( V_m.soma - V_m.dentwo )
 
-C_m.v d/dt V_m.v = ... - g_vs ( V_m.v - V_m.s )
+C_m.denone d/dt V_m.denone = ... - g_vs ( V_m.denone - V_m.soma )
 
-C_m.t d/dt V_m.t = ... - g_ts ( V_m.t - V_m.s )
+C_m.dentwo d/dt V_m.dentwo = ... - g_ts ( V_m.dentwo - V_m.soma )
 
 A spike is fired when the somatic membrane potential exceeds threshold,
-V_m.s >= V_th. After a spike, somatic membrane potential is clamped to
-a reset potential, V_m.s == V_reset, for the refractory period. Dendritic
+V_m.soma >= V_th. After a spike, somatic membrane potential is clamped to
+a reset potential, V_m.soma == V_reset, for the refractory period. Dendritic
 membrane potentials are not manipulated after a spike.
 
 There is one excitatory and one inhibitory conductance-based synapse
@@ -267,10 +267,10 @@ private:
     double E_in[ NCOMP ];       //!< Inhibitory reversal Potential in mV
     double E_L[ NCOMP ]; //!< Leak reversal Potential (aka resting potential)
                          //!< in mV
-    double tau_synE[ NCOMP ]; //!< Synaptic Time Constant Excitatory Synapse
+    double tau_synE[ NCOMP ]; //!< Synaptic Time Constant Excitatory Synapses
                               //!< in ms
     double tau_synI[ NCOMP ]; //!< Synaptic Time Constant for Inhibitory
-                              //!< Synapse in ms
+                              //!< Synapses in ms
     double I_e[ NCOMP ];      //!< Constant Current in pA
 
     Parameters_();                     //!< Sets default parameter values
