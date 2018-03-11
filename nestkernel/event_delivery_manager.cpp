@@ -119,7 +119,6 @@ EventDeliveryManager::initialize()
 void
 EventDeliveryManager::finalize()
 {
-  // clear the spike buffers
   for ( std::vector< std::vector< std::vector< std::vector< Target > > >* >::
           iterator it = spike_register_5g_.begin();
         it != spike_register_5g_.end();
@@ -213,10 +212,11 @@ EventDeliveryManager::configure_secondary_buffers()
 {
   send_buffer_secondary_events_.clear();
   send_buffer_secondary_events_.resize(
-    kernel().mpi_manager.get_buffer_size_secondary_events_in_int() );
+    kernel().mpi_manager.get_send_buffer_size_secondary_events_in_int() );
+
   recv_buffer_secondary_events_.clear();
   recv_buffer_secondary_events_.resize(
-    kernel().mpi_manager.get_buffer_size_secondary_events_in_int() );
+    kernel().mpi_manager.get_recv_buffer_size_secondary_events_in_int() );
 }
 
 void
@@ -311,19 +311,19 @@ EventDeliveryManager::gather_secondary_events( const bool done )
 #endif
 
   // write done marker at last position in every chunk
-  const size_t chunk_size_in_int =
-    kernel().mpi_manager.get_chunk_size_secondary_events_in_int();
   for ( thread rank = 0; rank < kernel().mpi_manager.get_num_processes();
         ++rank )
   {
-    send_buffer_secondary_events_[ ( rank + 1 ) * chunk_size_in_int - 1 ] = done;
+    send_buffer_secondary_events_[
+      kernel().mpi_manager.get_send_displacement_secondary_events_in_int( rank )
+      + kernel().mpi_manager.get_send_count_secondary_events_in_int( rank ) - 1 ] = done;
   }
 
 #ifndef DISABLE_TIMING
   kernel().mpi_manager.synchronize(); // to get an accurate time measurement across ranks
   sw_communicate_secondary_events.start();
 #endif
-  kernel().mpi_manager.communicate_secondary_events_Alltoall(
+  kernel().mpi_manager.communicate_secondary_events_Alltoallv(
     send_buffer_secondary_events_, recv_buffer_secondary_events_ );
 #ifndef DISABLE_TIMING
   sw_communicate_secondary_events.stop();

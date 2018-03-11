@@ -64,7 +64,6 @@ nest::MPIManager::MPIManager()
   , use_mpi_( false )
   , buffer_size_target_data_( 1 )
   , buffer_size_spike_data_( 1 )
-  , chunk_size_secondary_events_in_int_( 0 )
   , max_buffer_size_target_data_( 16777216 )
   , max_buffer_size_spike_data_( 8388608 )
   , adaptive_target_buffers_( true )
@@ -130,6 +129,11 @@ nest::MPIManager::init_mpi( int* argc, char** argv[] )
     2 * kernel().mpi_manager.get_num_processes() );
   kernel().mpi_manager.set_buffer_size_spike_data(
     2 * kernel().mpi_manager.get_num_processes() );
+
+  recv_counts_secondary_events_in_int_per_rank_.resize( get_num_processes(), 0 );
+  recv_displacements_secondary_events_in_int_per_rank_.resize( get_num_processes(), 0 );
+  send_counts_secondary_events_in_int_per_rank_.resize( get_num_processes(), 0 );
+  send_displacements_secondary_events_in_int_per_rank_.resize( get_num_processes(), 0 );
 
   // create off-grid-spike type for MPI communication
   // creating derived datatype
@@ -218,11 +222,26 @@ nest::MPIManager::get_status( DictionaryDatum& dict )
   def< bool >( dict, names::adaptive_target_buffers, adaptive_target_buffers_ );
   def< size_t >( dict, names::buffer_size_target_data, buffer_size_target_data_ );
   def< size_t >( dict, names::buffer_size_spike_data, buffer_size_spike_data_ );
-  def< size_t >( dict, names::buffer_size_secondary_events, get_buffer_size_secondary_events_in_int() );
+  def< size_t >( dict, names::send_buffer_size_secondary_events, get_send_buffer_size_secondary_events_in_int() );
+  def< size_t >( dict, names::recv_buffer_size_secondary_events, get_recv_buffer_size_secondary_events_in_int() );
   def< size_t >( dict, names::max_buffer_size_spike_data, max_buffer_size_spike_data_ );
   def< size_t >( dict, names::max_buffer_size_target_data, max_buffer_size_target_data_ );
   def< double >( dict, names::growth_factor_buffer_spike_data, growth_factor_buffer_spike_data_ );
   def< double >( dict, names::growth_factor_buffer_target_data, growth_factor_buffer_target_data_ );
+}
+
+void
+nest::MPIManager::communicate_recv_counts_secondary_events()
+{
+  communicate_Alltoall(
+    recv_counts_secondary_events_in_int_per_rank_,
+    send_counts_secondary_events_in_int_per_rank_,
+    1 );
+
+  std::partial_sum(
+   send_counts_secondary_events_in_int_per_rank_.begin(),
+   send_counts_secondary_events_in_int_per_rank_.end() - 1,
+   send_displacements_secondary_events_in_int_per_rank_.begin() + 1 );
 }
 
 void
@@ -761,17 +780,21 @@ nest::MPIManager::communicate_Alltoall_( void* send_buffer,
     comm );
 }
 
-
 void
-nest::MPIManager::communicate_secondary_events_Alltoall_(
-  void* send_buffer,
-  void* recv_buffer )
+nest::MPIManager::communicate_Alltoallv_( void* send_buffer,
+  const int* send_counts,
+  const int* send_displacements,
+  void* recv_buffer,
+  const int* recv_counts,
+  const int* recv_displacements )
 {
-  MPI_Alltoall( send_buffer,
-    chunk_size_secondary_events_in_int_,
+  MPI_Alltoallv( send_buffer,
+    send_counts,
+    send_displacements,
     MPI_UNSIGNED,
     recv_buffer,
-    chunk_size_secondary_events_in_int_,
+    recv_counts,
+    recv_displacements,
     MPI_UNSIGNED,
     comm );
 }

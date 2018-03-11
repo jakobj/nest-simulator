@@ -82,7 +82,8 @@ extern const Name
 extern const Name binary; //!< Recorder parameter
 extern const Name buffer_size_spike_data;     //! Used in MPIManager
 extern const Name buffer_size_target_data;    //! Used in MPIManager
-extern const Name buffer_size_secondary_events; //! Used in MPIManager
+extern const Name send_buffer_size_secondary_events; //! Used in MPIManager
+extern const Name recv_buffer_size_secondary_events; //! Used in MPIManager
 
 extern const Name c;         //!< Specific to Izhikevich 2003
 extern const Name c_1;       //!< Specific to stochastic neuron pp_psc_delta
