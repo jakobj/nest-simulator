@@ -223,11 +223,11 @@ public:
 
   void communicate_Alltoallv_(
     void* send_buffer,
-    const int* send_counts,
-    const int* send_displacements,
+    int* send_counts,
+    int* send_displacements,
     void* recv_buffer,
-    const int* recv_counts,
-    const int* recv_displacements );
+    int* recv_counts,
+    int* recv_displacements );
 
   void communicate_secondary_events_Alltoall_(
     void* send_buffer,

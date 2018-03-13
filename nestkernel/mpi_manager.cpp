@@ -782,11 +782,11 @@ nest::MPIManager::communicate_Alltoall_( void* send_buffer,
 
 void
 nest::MPIManager::communicate_Alltoallv_( void* send_buffer,
-  const int* send_counts,
-  const int* send_displacements,
+  int* send_counts,
+  int* send_displacements,
   void* recv_buffer,
-  const int* recv_counts,
-  const int* recv_displacements )
+  int* recv_counts,
+  int* recv_displacements )
 {
   MPI_Alltoallv( send_buffer,
     send_counts,
