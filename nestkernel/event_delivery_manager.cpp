@@ -366,6 +366,7 @@ EventDeliveryManager::gather_spike_data_( const thread tid,
   std::vector< SpikeDataT >& send_buffer,
   std::vector< SpikeDataT >& recv_buffer )
 {
+  SCOREP_USER_FUNC_BEGIN();
 #ifndef DISABLE_COUNTS
 #pragma omp single
   {
@@ -514,6 +515,7 @@ EventDeliveryManager::gather_spike_data_( const thread tid,
   } // of while( true )
 
   reset_spike_register_( tid );
+  SCOREP_USER_FUNC_END();
 }
 
 template < typename TargetT, typename SpikeDataT >
@@ -595,6 +597,7 @@ EventDeliveryManager::set_end_and_invalid_markers_(
   const SendBufferPosition& send_buffer_position,
   std::vector< SpikeDataT >& send_buffer )
 {
+  SCOREP_USER_FUNC_BEGIN();
   for ( thread rank = assigned_ranks.begin; rank < assigned_ranks.end; ++rank )
   {
     // thread-local index of (global) rank TODO@5g: [see above]
@@ -619,6 +622,7 @@ EventDeliveryManager::set_end_and_invalid_markers_(
       send_buffer[ send_buffer_position.begin( rank ) ].set_invalid_marker();
     }
   }
+  SCOREP_USER_FUNC_END();
 }
 
 template < typename SpikeDataT >
@@ -628,6 +632,7 @@ EventDeliveryManager::set_complete_marker_spike_data_(
   const SendBufferPosition& send_buffer_position,
   std::vector< SpikeDataT >& send_buffer )
 {
+  SCOREP_USER_FUNC_BEGIN();
   for ( thread target_rank = assigned_ranks.begin;
         target_rank < assigned_ranks.end;
         ++target_rank )
@@ -637,6 +642,7 @@ EventDeliveryManager::set_complete_marker_spike_data_(
     const thread idx = send_buffer_position.end( target_rank ) - 1;
     send_buffer[ idx ].set_complete_marker();
   }
+  SCOREP_USER_FUNC_BEGIN();
 }
 
 template < typename SpikeDataT >
@@ -644,6 +650,7 @@ bool
 EventDeliveryManager::deliver_events_( const thread tid,
   const std::vector< SpikeDataT >& recv_buffer )
 {
+  SCOREP_USER_REGION_DEFINE( handle )
 #ifndef DISABLE_COUNTS
   ++call_count_deliver_events[ tid ];
 #endif
@@ -663,6 +670,7 @@ EventDeliveryManager::deliver_events_( const thread tid,
   // prepare Time objects for every possible time stamp within min_delay_
   std::vector< Time > prepared_timestamps(
     kernel().connection_manager.get_min_delay() );
+  SCOREP_USER_REGION_BEGIN( handle, "deliver_evets_", SCOREP_USER_REGION_TYPE_LOOP )
   for ( size_t lag = 0;
         lag < ( size_t ) kernel().connection_manager.get_min_delay();
         ++lag )
@@ -709,7 +717,7 @@ EventDeliveryManager::deliver_events_( const thread tid,
       }
     }
   }
-
+  SCOREP_USER_REGION_END( handle )
   return are_others_completed;
 }
 
