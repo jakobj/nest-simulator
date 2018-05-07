@@ -642,7 +642,7 @@ EventDeliveryManager::set_complete_marker_spike_data_(
     const thread idx = send_buffer_position.end( target_rank ) - 1;
     send_buffer[ idx ].set_complete_marker();
   }
-  SCOREP_USER_FUNC_BEGIN();
+  SCOREP_USER_FUNC_END();
 }
 
 template < typename SpikeDataT >
