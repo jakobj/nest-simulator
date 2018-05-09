@@ -202,6 +202,8 @@ nest::iaf_psc_exp::iaf_psc_exp()
   , P_()
   , S_()
   , B_( *this )
+  , activity_( std::vector< unsigned int >( 0 ) )
+  , time_driven_( false )
 {
   recordablesMap_.create();
 }
@@ -211,6 +213,8 @@ nest::iaf_psc_exp::iaf_psc_exp( const iaf_psc_exp& n )
   , P_( n.P_ )
   , S_( n.S_ )
   , B_( n.B_, *this )
+  , activity_( n.activity_ )
+  , time_driven_( n.time_driven_ )
 {
 }
 
@@ -289,6 +293,13 @@ nest::iaf_psc_exp::calibrate()
   V_.RefractoryCounts_ = Time( Time::ms( P_.t_ref_ ) ).get_steps();
   // since t_ref_ >= 0, this can only fail in error
   assert( V_.RefractoryCounts_ >= 0 );
+
+  if ( time_driven_ )
+  {
+    const size_t buffer_size = kernel().connection_manager.get_min_delay();
+    activity_.resize( buffer_size );
+    reset_activity_();
+  }
 }
 
 void
@@ -297,6 +308,11 @@ nest::iaf_psc_exp::update( const Time& origin, const long from, const long to )
   assert(
     to >= 0 && ( delay ) from < kernel().connection_manager.get_min_delay() );
   assert( from < to );
+
+  if ( time_driven_ )
+  {
+    reset_activity_();
+  }
 
   // evolve from timestep 'from' to timestep 'to' with steps of h each
   for ( long lag = from; lag < to; ++lag )
@@ -334,8 +350,15 @@ nest::iaf_psc_exp::update( const Time& origin, const long from, const long to )
 
       set_spiketime( Time::step( origin.get_steps() + lag + 1 ) );
 
-      SpikeEvent se;
-      kernel().event_delivery_manager.send( *this, se, lag );
+      if ( time_driven_ )
+      {
+        set_activity_( lag );
+      }
+      else
+      {
+        SpikeEvent se;
+        kernel().event_delivery_manager.send( *this, se, lag );
+      }
     }
 
     // set new input current
@@ -344,6 +367,13 @@ nest::iaf_psc_exp::update( const Time& origin, const long from, const long to )
 
     // log state data
     B_.logger_.record_data( origin.get_steps() + lag );
+  }
+
+  if ( time_driven_ )
+  {
+    TimeDrivenSpikeEvent e;
+    e.set_coeffarray( activity_ );
+    kernel().event_delivery_manager.send_secondary( *this, e );
   }
 }
 
@@ -395,4 +425,33 @@ void
 nest::iaf_psc_exp::handle( DataLoggingRequest& e )
 {
   B_.logger_.handle( e );
+}
+
+void
+nest::iaf_psc_exp::handle( TimeDrivenSpikeEvent& e )
+{
+  assert( e.get_delay() > 0 );
+  assert( time_driven_ );
+
+  const delay d = e.get_delay();
+
+  size_t lag = 0;
+  std::vector< unsigned int >::iterator it = e.begin();
+  // The call to get_coeffvalue( it ) in this loop also advances the iterator it
+  while ( it != e.end() )
+  {
+    const unsigned int v = e.get_coeffvalue( it );
+    if ( v > 0 )
+    {
+      if ( e.get_weight() >= 0.0 )
+      {
+        B_.spikes_ex_.add_value( d + lag, e.get_weight() );
+      }
+      else
+      {
+        B_.spikes_in_.add_value( d + lag, e.get_weight() );
+      }
+    }
+    ++lag;
+  }
 }

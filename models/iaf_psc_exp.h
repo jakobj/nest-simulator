@@ -145,16 +145,24 @@ public:
    */
   using Node::handle;
   using Node::handles_test_event;
+  using Node::sends_secondary_event;
 
   port send_test_event( Node&, rport, synindex, bool );
 
   void handle( SpikeEvent& );
   void handle( CurrentEvent& );
   void handle( DataLoggingRequest& );
+  void handle( TimeDrivenSpikeEvent& );
 
   port handles_test_event( SpikeEvent&, rport );
   port handles_test_event( CurrentEvent&, rport );
   port handles_test_event( DataLoggingRequest&, rport );
+  port handles_test_event( TimeDrivenSpikeEvent&, rport );
+
+  void
+  sends_secondary_event( TimeDrivenSpikeEvent& )
+  {
+  }
 
   void get_status( DictionaryDatum& ) const;
   void set_status( const DictionaryDatum& );
@@ -165,6 +173,9 @@ private:
   void calibrate();
 
   void update( const Time&, const long, const long );
+
+  void reset_activity_();
+  void set_activity_( const long lag );
 
   // The next two classes need to be friends to access the State_ class/member
   friend class RecordablesMap< iaf_psc_exp >;
@@ -343,6 +354,9 @@ private:
 
   //! Mapping of recordables names to access functions
   static RecordablesMap< iaf_psc_exp > recordablesMap_;
+
+  std::vector< unsigned int > activity_;
+  bool time_driven_;
 };
 
 
@@ -394,6 +408,16 @@ iaf_psc_exp::handles_test_event( DataLoggingRequest& dlr, rport receptor_type )
   return B_.logger_.connect_logging_device( dlr, recordablesMap_ );
 }
 
+inline port
+iaf_psc_exp::handles_test_event( TimeDrivenSpikeEvent&, rport receptor_type )
+{
+  if ( receptor_type != 0 )
+  {
+    throw UnknownReceptorType( receptor_type, get_name() );
+  }
+  return 0;
+}
+
 inline void
 iaf_psc_exp::get_status( DictionaryDatum& d ) const
 {
@@ -402,6 +426,8 @@ iaf_psc_exp::get_status( DictionaryDatum& d ) const
   Archiving_Node::get_status( d );
 
   ( *d )[ names::recordables ] = recordablesMap_.get_list();
+
+  def< bool >( d, "time_driven", time_driven_ );
 }
 
 inline void
@@ -421,6 +447,24 @@ iaf_psc_exp::set_status( const DictionaryDatum& d )
   // if we get here, temporaries contain consistent set of properties
   P_ = ptmp;
   S_ = stmp;
+
+  updateValue< bool >( d, "time_driven", time_driven_ );
+}
+
+inline void
+iaf_psc_exp::reset_activity_()
+{
+  for ( std::vector< unsigned int >::iterator it = activity_.begin(); it < activity_.end(); ++it )
+  {
+    ( *it ) = 0;
+  }
+}
+
+inline void
+iaf_psc_exp::set_activity_( const long lag )
+{
+  assert( static_cast< size_t>( lag ) < activity_.size() );
+  activity_[ lag ] = 1;
 }
 
 } // namespace
