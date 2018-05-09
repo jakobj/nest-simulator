@@ -119,6 +119,7 @@ public:
   void handle( SpikeEvent& );
 
   port handles_test_event( SpikeEvent&, rport );
+  port handles_test_event( TimeDrivenSpikeEvent&, rport );
 
   SignalType receives_signal() const;
 
@@ -174,6 +175,16 @@ private:
 
 inline port
 spike_detector::handles_test_event( SpikeEvent&, rport receptor_type )
+{
+  if ( receptor_type != 0 )
+  {
+    throw UnknownReceptorType( receptor_type, get_name() );
+  }
+  return 0;
+}
+
+inline port
+spike_detector::handles_test_event( TimeDrivenSpikeEvent&, rport receptor_type )
 {
   if ( receptor_type != 0 )
   {
