@@ -50,6 +50,9 @@
 #include "arraydatum.h"
 #include "dictutils.h"
 
+#include "scorep/SCOREP_User.h"
+#include <typeinfo>
+
 namespace nest
 {
 
@@ -426,7 +429,10 @@ public:
     const std::vector< ConnectorModel* >& cm,
     Event& e )
   {
-
+    SCOREP_USER_REGION_DEFINE(region_handle)
+    const char* region_name = typeid(*this).name();
+    SCOREP_USER_REGION_BEGIN(region_handle, region_name, SCOREP_USER_REGION_TYPE_COMMON)
+    SCOREP_USER_PARAMETER_UINT64("syn_id", syn_id)
     typename ConnectionT::CommonPropertiesType const& cp =
       static_cast< GenericConnectorModel< ConnectionT >* >( cm[ syn_id_ ] )
         ->get_common_properties();
@@ -450,7 +456,7 @@ public:
       }
       ++lcid_offset;
     }
-
+    SCOREP_USER_REGION_END(region_handle);
     return 1 + lcid_offset; // event was delivered at least to one target
   }
 

@@ -22,6 +22,14 @@
 
 #include "allocator.h"
 
+#include "allocator.h"
+#ifdef SCOREP_USER_ENABLE
+#include "scorep/SCOREP_User.h"
+#else
+#define SCOREP_USER_FUNC_BEGIN()
+#define SCOREP_USER_FUNC_END()
+#endif
+
 sli::pool::pool()
   : initial_block_size( 1024 )
   , growth_factor( 1 )
@@ -169,9 +177,11 @@ PoorMansAllocator::new_chunk()
   // We store the head pointer as char*, because sizeof(char) = 1, so
   // that we can add sizeof(object) to advance the pointer to the next
   // free location.
+  SCOREP_USER_FUNC_BEGIN();
   head_ = reinterpret_cast< char* >( malloc( chunk_size_ ) );
   chunks_ = new chunk( head_, chunks_ );
   capacity_ = chunk_size_;
+  SCOREP_USER_FUNC_END();
 }
 
 void
@@ -187,6 +197,7 @@ PoorMansAllocator::destruct()
 void*
 PoorMansAllocator::alloc( size_t obj_size )
 {
+  SCOREP_USER_FUNC_BEGIN();
   if ( obj_size > capacity_ )
   {
     new_chunk();
@@ -195,6 +206,7 @@ PoorMansAllocator::alloc( size_t obj_size )
   head_ += obj_size; // Advance pointer to next free location.
                      // This works, because sizeof(head*) == 1
   capacity_ -= obj_size;
+  SCOREP_USER_FUNC_END();
   return ptr;
 }
 
