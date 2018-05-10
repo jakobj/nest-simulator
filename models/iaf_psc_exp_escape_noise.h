@@ -425,6 +425,12 @@ iaf_psc_exp_escape_noise::handles_test_event( DataLoggingRequest& dlr, rport rec
 inline port
 iaf_psc_exp_escape_noise::handles_test_event( TimeDrivenSpikeEvent&, rport receptor_type )
 {
+  if ( not time_driven_ )
+  {
+    throw IllegalConnection( "Receiving node is not in time-driven mode." );
+    return invalid_port_;
+  }
+
   if ( receptor_type != 0 )
   {
     throw UnknownReceptorType( receptor_type, get_name() );

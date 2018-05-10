@@ -315,6 +315,7 @@ nest::iaf_psc_exp_escape_noise::update( const Time& origin, const long from, con
     to >= 0 && ( delay ) from < kernel().connection_manager.get_min_delay() );
   assert( from < to );
 
+  const thread tid = get_thread();
   const double h = Time::get_resolution().get_ms();
 
   if ( time_driven_ )
@@ -361,6 +362,14 @@ nest::iaf_psc_exp_escape_noise::update( const Time& origin, const long from, con
       if ( time_driven_ )
       {
         set_activity_( lag );
+
+        // send actual spike event to devices
+        SpikeEvent se;
+        se.set_sender_gid( get_gid() );
+        se.set_stamp(
+          kernel().simulation_manager.get_slice_origin() + Time::step( lag + 1 ) );
+        se.set_sender( *this );
+        kernel().connection_manager.send_to_devices( tid, get_gid(), se );
       }
       else
       {
