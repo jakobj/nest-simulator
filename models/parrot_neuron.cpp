@@ -45,6 +45,7 @@ namespace nest
 
 parrot_neuron::parrot_neuron()
   : Archiving_Node()
+  , activity_( std::vector< unsigned int >( 0 ) )
 {
 }
 
@@ -53,6 +54,10 @@ parrot_neuron::init_buffers_()
 {
   B_.n_spikes_.clear(); // includes resize
   Archiving_Node::clear_history();
+
+  const size_t buffer_size = kernel().connection_manager.get_min_delay();
+  activity_.resize( buffer_size );
+  reset_activity_();
 }
 
 void
@@ -62,12 +67,16 @@ parrot_neuron::update( Time const& origin, const long from, const long to )
     to >= 0 && ( delay ) from < kernel().connection_manager.get_min_delay() );
   assert( from < to );
 
+  reset_activity_();
+
   for ( long lag = from; lag < to; ++lag )
   {
     const unsigned long current_spikes_n =
       static_cast< unsigned long >( B_.n_spikes_.get_value( lag ) );
     if ( current_spikes_n > 0 )
     {
+      set_activity_( lag );
+
       // create a new SpikeEvent, set its multiplicity and send it
       SpikeEvent se;
       se.set_multiplicity( current_spikes_n );
@@ -80,6 +89,10 @@ parrot_neuron::update( Time const& origin, const long from, const long to )
       }
     }
   }
+
+  TimeDrivenSpikeEvent e;
+  e.set_coeffarray( activity_ );
+  kernel().event_delivery_manager.send_secondary( *this, e );
 }
 
 void

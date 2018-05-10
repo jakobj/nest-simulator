@@ -95,6 +95,7 @@ public:
   using Node::handles_test_event;
   using Node::sends_signal;
   using Node::receives_signal;
+  using Node::sends_secondary_event;
 
   port send_test_event( Node&, rport, synindex, bool );
   SignalType sends_signal() const;
@@ -102,6 +103,11 @@ public:
 
   void handle( SpikeEvent& );
   port handles_test_event( SpikeEvent&, rport );
+
+  void
+  sends_secondary_event( TimeDrivenSpikeEvent& )
+  {
+  }
 
   void get_status( DictionaryDatum& ) const;
   void set_status( const DictionaryDatum& );
@@ -119,6 +125,9 @@ private:
 
   void update( Time const&, const long, const long );
 
+  void reset_activity_();
+  void set_activity_( const long lag );
+
   /**
      Buffers and accumulates the number of incoming spikes per time step;
      RingBuffer stores doubles; for now the numbers are casted.
@@ -129,6 +138,7 @@ private:
   };
 
   Buffers_ B_;
+  std::vector< unsigned int > activity_;
 };
 
 inline port
@@ -168,6 +178,22 @@ inline SignalType
 parrot_neuron::receives_signal() const
 {
   return ALL;
+}
+
+inline void
+parrot_neuron::reset_activity_()
+{
+  for ( std::vector< unsigned int >::iterator it = activity_.begin(); it < activity_.end(); ++it )
+  {
+    ( *it ) = 0;
+  }
+}
+
+inline void
+parrot_neuron::set_activity_( const long lag )
+{
+  assert( static_cast< size_t>( lag ) < activity_.size() );
+  activity_[ lag ] = 1;
 }
 
 } // namespace
