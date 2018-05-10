@@ -69,6 +69,7 @@
 #include "iaf_psc_alpha_multisynapse.h"
 #include "iaf_psc_delta.h"
 #include "iaf_psc_exp.h"
+#include "iaf_psc_exp_escape_noise.h"
 #include "iaf_psc_exp_multisynapse.h"
 #include "iaf_tum_2000.h"
 #include "izhikevich.h"
@@ -235,6 +236,7 @@ ModelsModule::init( SLIInterpreter* )
   kernel().model_manager.register_node_model< iaf_psc_delta >(
     "iaf_psc_delta" );
   kernel().model_manager.register_node_model< iaf_psc_exp >( "iaf_psc_exp" );
+  kernel().model_manager.register_node_model< iaf_psc_exp_escape_noise >( "iaf_psc_exp_escape_noise" );
   kernel().model_manager.register_node_model< iaf_psc_exp_multisynapse >(
     "iaf_psc_exp_multisynapse" );
   kernel().model_manager.register_node_model< iaf_tum_2000 >( "iaf_tum_2000" );
