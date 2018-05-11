@@ -132,13 +132,7 @@ public:
       const unsigned int v = re.get_coeffvalue( it );
       if ( v > 0 )
       {
-        SpikeEvent se;
-        se.set_stamp( re.get_stamp() + Time::step( lag ) );
-        se.set_port( re.get_port() );
-        se.set_weight( weight_ );
-        se.set_delay( get_delay_steps() );
-        se.set_receiver( *get_target( t ) );
-        se.set_rport( get_rport() );
+        SpikeEvent se( re, lag );
         se();
       }
       ++lag;

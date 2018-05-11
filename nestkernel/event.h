@@ -344,6 +344,8 @@ protected:
   weight w_;
 };
 
+class TimeDrivenSpikeEvent;
+
 
 // Built-in event types
 /**
@@ -354,6 +356,7 @@ class SpikeEvent : public Event
 {
 public:
   SpikeEvent();
+  SpikeEvent( const TimeDrivenSpikeEvent& e, const size_t lag );
   void operator()();
   SpikeEvent* clone() const;
 
@@ -1264,6 +1267,17 @@ inline TimeDrivenSpikeEvent*
 TimeDrivenSpikeEvent::clone() const
 {
   return new TimeDrivenSpikeEvent( *this );
+}
+
+inline SpikeEvent::SpikeEvent( const TimeDrivenSpikeEvent& e, const size_t lag )
+  : multiplicity_( 1 )
+{
+  set_stamp( e.get_stamp() + Time::step( lag ) );
+  set_port( e.get_port() );
+  set_weight( e.get_weight() );
+  set_delay( e.get_delay() );
+  set_receiver( e.get_receiver() );
+  set_rport( e.get_rport() );
 }
 
 //*************************************************************
