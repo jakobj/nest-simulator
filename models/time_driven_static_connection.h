@@ -114,7 +114,35 @@ public:
     e.set_delay( get_delay_steps() );
     e.set_receiver( *get_target( t ) );
     e.set_rport( get_rport() );
-    e();
+    // e();
+
+    // instead of calling handle() in the TimeDrivenSpikeEvent, we
+    // loop over all lags and send out a SpikeEvent for every
+    // timestep, in which the TimeDrivenSpikeEvent contains an entry;
+    // for this we need to copy all information from the original to
+    // the new event
+
+    EventType re = *static_cast< EventType* >( &e );
+
+    size_t lag = 0;
+    std::vector< unsigned int >::iterator it = re.begin();
+    // The call to get_coeffvalue( it ) in this loop also advances the iterator it
+    while ( it != re.end() )
+    {
+      const unsigned int v = re.get_coeffvalue( it );
+      if ( v > 0 )
+      {
+        SpikeEvent se;
+        se.set_stamp( re.get_stamp() + Time::step( lag ) );
+        se.set_port( re.get_port() );
+        se.set_weight( weight_ );
+        se.set_delay( get_delay_steps() );
+        se.set_receiver( *get_target( t ) );
+        se.set_rport( get_rport() );
+        se();
+      }
+      ++lag;
+    }
   }
 
   void get_status( DictionaryDatum& d ) const;
