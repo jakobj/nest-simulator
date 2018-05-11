@@ -438,6 +438,8 @@ public:
 
   void set_stdp_eps( const double stdp_eps );
 
+  void prepare_connections();
+
 private:
   size_t get_num_target_data( const thread tid ) const;
 

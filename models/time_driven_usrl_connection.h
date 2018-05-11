@@ -1,5 +1,5 @@
 /*
- *  time_driven_static_connection.h
+ *  time_driven_usrl_connection.h
  *
  *  This file is part of NEST.
  *
@@ -46,10 +46,17 @@ SeeAlso: rate_connection_instantaneous, rate_neuron_ipn, rate_neuron_opn
 */
 
 
-#ifndef TIME_DRIVEN_STATIC_CONNECTION_H
-#define TIME_DRIVEN_STATIC_CONNECTION_H
+#ifndef TIME_DRIVEN_USRL_CONNECTION_H
+#define TIME_DRIVEN_USRL_CONNECTION_H
 
 #include "connection.h"
+
+// Includes from libnestutil:
+#include "numerics.h"
+#include "propagator_stability.h"
+
+// Includes from nestkernel:
+#include "ring_buffer.h"
 
 namespace nest
 {
@@ -58,7 +65,7 @@ namespace nest
  * has the properties weight, delay and receiver port.
  */
 template < typename targetidentifierT >
-class TimeDrivenStaticConnection : public Connection< targetidentifierT >
+class TimeDrivenUSRLConnection : public Connection< targetidentifierT >
 {
 
 public:
@@ -71,11 +78,7 @@ public:
    * Default Constructor.
    * Sets default values for all parameters. Needed by GenericConnectorModel.
    */
-  TimeDrivenStaticConnection()
-    : ConnectionBase()
-    , weight_( 1.0 )
-  {
-  }
+  TimeDrivenUSRLConnection();
 
   // Explicitly declare all methods inherited from the dependent base
   // ConnectionBase.
@@ -107,37 +110,7 @@ public:
    * \param e The event to send
    * \param p The port under which this connection is stored in the Connector.
    */
-  void
-  send( Event& e, thread t, const CommonSynapseProperties& )
-  {
-    e.set_weight( weight_ );
-    e.set_delay( get_delay_steps() );
-    e.set_receiver( *get_target( t ) );
-    e.set_rport( get_rport() );
-    // e();
-
-    // instead of calling handle() in the TimeDrivenSpikeEvent, we
-    // loop over all lags and send out a SpikeEvent for every
-    // timestep, in which the TimeDrivenSpikeEvent contains an entry;
-    // for this we need to copy all information from the original to
-    // the new event
-
-    EventType re = *static_cast< EventType* >( &e );
-
-    size_t lag = 0;
-    std::vector< unsigned int >::iterator it = re.begin();
-    // The call to get_coeffvalue( it ) in this loop also advances the iterator it
-    while ( it != re.end() )
-    {
-      const unsigned int v = re.get_coeffvalue( it );
-      if ( v > 0 )
-      {
-        SpikeEvent se( re, lag );
-        se();
-      }
-      ++lag;
-    }
-  }
+  void send( Event& e, thread t, const CommonSynapseProperties& );
 
   void get_status( DictionaryDatum& d ) const;
 
@@ -149,16 +122,35 @@ public:
     weight_ = w;
   }
 
-  void init_buffers(){};
-  void make_calibrate(){};
+  void init_buffers();
+
+  void make_calibrate();
 
 private:
   double weight_; //!< connection weight
+  double E_;//!< eligibility trace
+
+  double tau_ex_;
+  double Tau_;
+  double C_;
+
+  // propagators, required for computing PSP
+  double P11ex_;
+  double P21ex_;
+  double P22_;
+
+  // dynamic variables, required for computing PSP
+  double V_m_;
+  double i_syn_ex_;
+  double weighted_spikes_ex_;
+
+  // buffers to store incoming spikes and process them after a delay
+  RingBuffer spikes_ex_;
 };
 
 template < typename targetidentifierT >
 void
-TimeDrivenStaticConnection< targetidentifierT >::get_status(
+TimeDrivenUSRLConnection< targetidentifierT >::get_status(
   DictionaryDatum& d ) const
 {
   ConnectionBase::get_status( d );
@@ -168,7 +160,7 @@ TimeDrivenStaticConnection< targetidentifierT >::get_status(
 
 template < typename targetidentifierT >
 void
-TimeDrivenStaticConnection< targetidentifierT >::set_status(
+TimeDrivenUSRLConnection< targetidentifierT >::set_status(
   const DictionaryDatum& d,
   ConnectorModel& cm )
 {
@@ -176,6 +168,23 @@ TimeDrivenStaticConnection< targetidentifierT >::set_status(
   updateValue< double >( d, names::weight, weight_ );
 }
 
+template < typename targetidentifierT >
+void
+TimeDrivenUSRLConnection< targetidentifierT >::init_buffers()
+{
+  spikes_ex_.clear(); // includes resize
+}
+
+template < typename targetidentifierT >
+void
+TimeDrivenUSRLConnection< targetidentifierT >::make_calibrate()
+{
+  const double h = Time::get_resolution().get_ms();
+  P11ex_ = std::exp( -h / tau_ex_ );
+  P22_ = std::exp( -h / Tau_ );
+  P21ex_ = propagator_32( tau_ex_, Tau_, C_, h );
+}
+
 } // namespace
 
-#endif /* #ifndef TIME_DIVEN_STATIC_CONNECTION_H */
+#endif /* #ifndef TIME_DIVEN_USRL_CONNECTION_H */

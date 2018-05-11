@@ -477,6 +477,7 @@ nest::SimulationManager::prepare()
     {
       const thread tid = kernel().vp_manager.get_thread_id();
       update_connection_infrastructure( tid );
+      kernel().connection_manager.prepare_connections();
     } // of omp parallel
   }
 

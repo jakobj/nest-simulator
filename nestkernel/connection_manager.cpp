@@ -1741,3 +1741,21 @@ nest::ConnectionManager::check_secondary_connections_exist()
   secondary_connections_exist_ =
     kernel().mpi_manager.any_true( secondary_connections_exist_ );
 }
+
+
+void
+nest::ConnectionManager::prepare_connections()
+{
+#pragma omp parallel
+  {
+    const thread tid = kernel().vp_manager.get_thread_id();
+    for ( std::vector< ConnectorBase* >::iterator it = connections_[ tid ]->begin();
+          it != connections_[ tid ]->end(); ++it )
+    {
+      if ( ( *it ) != NULL )
+      {
+        ( *it )->prepare();
+      }
+    }
+  } // of omp parallel
+}

@@ -132,6 +132,8 @@
 #include "static_connection.h"
 #include "static_connection_hom_w.h"
 #include "time_driven_static_connection.h"
+#include "time_driven_usrl_connection.h"
+#include "time_driven_usrl_connection_impl.h"
 #include "stdp_connection.h"
 #include "stdp_connection_facetshw_hom.h"
 #include "stdp_connection_facetshw_hom_impl.h"
@@ -453,10 +455,10 @@ ModelsModule::init( SLIInterpreter* )
     .model_manager
     .register_connection_model< StaticConnection< TargetIdentifierPtrRport > >(
       "static_synapse" );
-  kernel()
-    .model_manager
-    .register_connection_model< StaticConnection< TargetIdentifierIndex > >(
-      "static_synapse_hpc" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< StaticConnection< TargetIdentifierIndex > >(
+  //     "static_synapse_hpc" );
 
 
   /* BeginDocumentation
@@ -464,14 +466,14 @@ ModelsModule::init( SLIInterpreter* )
      memory consumption.
      SeeAlso: synapsedict, static_synapse_hom_w, static_synapse_hpc
   */
-  kernel()
-    .model_manager
-    .register_connection_model< StaticConnectionHomW< TargetIdentifierPtrRport > >(
-      "static_synapse_hom_w" );
-  kernel()
-    .model_manager
-    .register_connection_model< StaticConnectionHomW< TargetIdentifierIndex > >(
-      "static_synapse_hom_w_hpc" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< StaticConnectionHomW< TargetIdentifierPtrRport > >(
+  //     "static_synapse_hom_w" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< StaticConnectionHomW< TargetIdentifierIndex > >(
+  //     "static_synapse_hom_w_hpc" );
 
   kernel()
     .model_manager
@@ -481,39 +483,47 @@ ModelsModule::init( SLIInterpreter* )
       /*requires_symmetric=*/false,
       /*supports_wfr=*/false );
 
+  kernel()
+    .model_manager
+    .register_secondary_connection_model< TimeDrivenUSRLConnection< TargetIdentifierPtrRport > >(
+      "time_driven_usrl_synapse",
+      /*has_delay=*/true,
+      /*requires_symmetric=*/false,
+      /*supports_wfr=*/false );
+
 
   /* BeginDocumentation
      Name: gap_junction - Connection model for gap junctions.
      SeeAlso: synapsedict
   */
-  kernel()
-    .model_manager
-    .register_secondary_connection_model< GapJunction< TargetIdentifierPtrRport > >(
-      "gap_junction",
-      /*has_delay=*/false,
-      /*requires_symmetric=*/true,
-      /*supports_wfr=*/true );
-  kernel()
-    .model_manager
-    .register_secondary_connection_model< RateConnectionInstantaneous< TargetIdentifierPtrRport > >(
-      "rate_connection_instantaneous",
-      /*has_delay=*/false,
-      /*requires_symmetric=*/false,
-      /*supports_wfr=*/true );
-  kernel()
-    .model_manager
-    .register_secondary_connection_model< RateConnectionDelayed< TargetIdentifierPtrRport > >(
-      "rate_connection_delayed",
-      /*has_delay=*/true,
-      /*requires_symmetric=*/false,
-      /*supports_wfr=*/false );
-  kernel()
-    .model_manager
-    .register_secondary_connection_model< DiffusionConnection< TargetIdentifierPtrRport > >(
-      "diffusion_connection",
-      /*has_delay=*/false,
-      /*requires_symmetric=*/false,
-      /*supports_wfr=*/true );
+  // kernel()
+  //   .model_manager
+  //   .register_secondary_connection_model< GapJunction< TargetIdentifierPtrRport > >(
+  //     "gap_junction",
+  //     /*has_delay=*/false,
+  //     /*requires_symmetric=*/true,
+  //     /*supports_wfr=*/true );
+  // kernel()
+  //   .model_manager
+  //   .register_secondary_connection_model< RateConnectionInstantaneous< TargetIdentifierPtrRport > >(
+  //     "rate_connection_instantaneous",
+  //     /*has_delay=*/false,
+  //     /*requires_symmetric=*/false,
+  //     /*supports_wfr=*/true );
+  // kernel()
+  //   .model_manager
+  //   .register_secondary_connection_model< RateConnectionDelayed< TargetIdentifierPtrRport > >(
+  //     "rate_connection_delayed",
+  //     /*has_delay=*/true,
+  //     /*requires_symmetric=*/false,
+  //     /*supports_wfr=*/false );
+  // kernel()
+  //   .model_manager
+  //   .register_secondary_connection_model< DiffusionConnection< TargetIdentifierPtrRport > >(
+  //     "diffusion_connection",
+  //     /*has_delay=*/false,
+  //     /*requires_symmetric=*/false,
+  //     /*supports_wfr=*/true );
 
 
   /* BeginDocumentation
@@ -521,14 +531,14 @@ ModelsModule::init( SLIInterpreter* )
      consumption.
      SeeAlso: synapsedict, stdp_synapse, static_synapse_hpc
   */
-  kernel()
-    .model_manager
-    .register_connection_model< STDPConnection< TargetIdentifierPtrRport > >(
-      "stdp_synapse" );
-  kernel()
-    .model_manager
-    .register_connection_model< STDPConnection< TargetIdentifierIndex > >(
-      "stdp_synapse_hpc" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< STDPConnection< TargetIdentifierPtrRport > >(
+  //     "stdp_synapse" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< STDPConnection< TargetIdentifierIndex > >(
+  //     "stdp_synapse_hpc" );
 
 
   /* BeginDocumentation
@@ -536,14 +546,14 @@ ModelsModule::init( SLIInterpreter* )
      memory consumption.
      SeeAlso: synapsedict, stdp_pl_synapse_hom, static_synapse_hpc
   */
-  kernel()
-    .model_manager
-    .register_connection_model< STDPPLConnectionHom< TargetIdentifierPtrRport > >(
-      "stdp_pl_synapse_hom" );
-  kernel()
-    .model_manager
-    .register_connection_model< STDPPLConnectionHom< TargetIdentifierIndex > >(
-      "stdp_pl_synapse_hom_hpc" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< STDPPLConnectionHom< TargetIdentifierPtrRport > >(
+  //     "stdp_pl_synapse_hom" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< STDPPLConnectionHom< TargetIdentifierIndex > >(
+  //     "stdp_pl_synapse_hom_hpc" );
 
 
   /* BeginDocumentation
@@ -551,14 +561,14 @@ ModelsModule::init( SLIInterpreter* )
      memory consumption.
      SeeAlso: synapsedict, stdp_synapse, static_synapse_hpc
   */
-  kernel()
-    .model_manager
-    .register_connection_model< STDPTripletConnection< TargetIdentifierPtrRport > >(
-      "stdp_triplet_synapse" );
-  kernel()
-    .model_manager
-    .register_connection_model< STDPTripletConnection< TargetIdentifierIndex > >(
-      "stdp_triplet_synapse_hpc" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< STDPTripletConnection< TargetIdentifierPtrRport > >(
+  //     "stdp_triplet_synapse" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< STDPTripletConnection< TargetIdentifierIndex > >(
+  //     "stdp_triplet_synapse_hpc" );
 
 
   /* BeginDocumentation
@@ -566,14 +576,14 @@ ModelsModule::init( SLIInterpreter* )
      memory consumption.
      SeeAlso: synapsedict, quantal_stp_synapse, static_synapse_hpc
   */
-  kernel()
-    .model_manager
-    .register_connection_model< Quantal_StpConnection< TargetIdentifierPtrRport > >(
-      "quantal_stp_synapse" );
-  kernel()
-    .model_manager
-    .register_connection_model< Quantal_StpConnection< TargetIdentifierIndex > >(
-      "quantal_stp_synapse_hpc" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< Quantal_StpConnection< TargetIdentifierPtrRport > >(
+  //     "quantal_stp_synapse" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< Quantal_StpConnection< TargetIdentifierIndex > >(
+  //     "quantal_stp_synapse_hpc" );
 
 
   /* BeginDocumentation
@@ -581,14 +591,14 @@ ModelsModule::init( SLIInterpreter* )
      consumption.
      SeeAlso: synapsedict, stdp_synapse_hom, static_synapse_hpc
   */
-  kernel()
-    .model_manager
-    .register_connection_model< STDPConnectionHom< TargetIdentifierPtrRport > >(
-      "stdp_synapse_hom" );
-  kernel()
-    .model_manager
-    .register_connection_model< STDPConnectionHom< TargetIdentifierIndex > >(
-      "stdp_synapse_hom_hpc" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< STDPConnectionHom< TargetIdentifierPtrRport > >(
+  //     "stdp_synapse_hom" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< STDPConnectionHom< TargetIdentifierIndex > >(
+  //     "stdp_synapse_hom_hpc" );
 
 
   /* BeginDocumentation
@@ -596,14 +606,14 @@ ModelsModule::init( SLIInterpreter* )
      with low memory consumption.
      SeeAlso: synapsedict, stdp_facetshw_synapse_hom, static_synapse_hpc
   */
-  kernel()
-    .model_manager
-    .register_connection_model< STDPFACETSHWConnectionHom< TargetIdentifierPtrRport > >(
-      "stdp_facetshw_synapse_hom" );
-  kernel()
-    .model_manager
-    .register_connection_model< STDPFACETSHWConnectionHom< TargetIdentifierIndex > >(
-      "stdp_facetshw_synapse_hom_hpc" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< STDPFACETSHWConnectionHom< TargetIdentifierPtrRport > >(
+  //     "stdp_facetshw_synapse_hom" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< STDPFACETSHWConnectionHom< TargetIdentifierIndex > >(
+  //     "stdp_facetshw_synapse_hom_hpc" );
 
 
   /* BeginDocumentation
@@ -611,14 +621,14 @@ ModelsModule::init( SLIInterpreter* )
      memory consumption.
      SeeAlso: synapsedict, cont_delay_synapse, static_synapse_hpc
   */
-  kernel()
-    .model_manager
-    .register_connection_model< ContDelayConnection< TargetIdentifierPtrRport > >(
-      "cont_delay_synapse" );
-  kernel()
-    .model_manager
-    .register_connection_model< ContDelayConnection< TargetIdentifierIndex > >(
-      "cont_delay_synapse_hpc" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< ContDelayConnection< TargetIdentifierPtrRport > >(
+  //     "cont_delay_synapse" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< ContDelayConnection< TargetIdentifierIndex > >(
+  //     "cont_delay_synapse_hpc" );
 
 
   /* BeginDocumentation
@@ -626,14 +636,14 @@ ModelsModule::init( SLIInterpreter* )
      consumption.
      SeeAlso: synapsedict, tsodyks_synapse, static_synapse_hpc
   */
-  kernel()
-    .model_manager
-    .register_connection_model< TsodyksConnection< TargetIdentifierPtrRport > >(
-      "tsodyks_synapse" );
-  kernel()
-    .model_manager
-    .register_connection_model< TsodyksConnection< TargetIdentifierIndex > >(
-      "tsodyks_synapse_hpc" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< TsodyksConnection< TargetIdentifierPtrRport > >(
+  //     "tsodyks_synapse" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< TsodyksConnection< TargetIdentifierIndex > >(
+  //     "tsodyks_synapse_hpc" );
 
 
   /* BeginDocumentation
@@ -641,14 +651,14 @@ ModelsModule::init( SLIInterpreter* )
      memory consumption.
      SeeAlso: synapsedict, tsodyks_synapse_hom, static_synapse_hpc
   */
-  kernel()
-    .model_manager
-    .register_connection_model< TsodyksConnectionHom< TargetIdentifierPtrRport > >(
-      "tsodyks_synapse_hom" );
-  kernel()
-    .model_manager
-    .register_connection_model< TsodyksConnectionHom< TargetIdentifierIndex > >(
-      "tsodyks_synapse_hom_hpc" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< TsodyksConnectionHom< TargetIdentifierPtrRport > >(
+  //     "tsodyks_synapse_hom" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< TsodyksConnectionHom< TargetIdentifierIndex > >(
+  //     "tsodyks_synapse_hom_hpc" );
 
 
   /* BeginDocumentation
@@ -656,28 +666,28 @@ ModelsModule::init( SLIInterpreter* )
      consumption.
      SeeAlso: synapsedict, tsodyks2_synapse, static_synapse_hpc
   */
-  kernel()
-    .model_manager
-    .register_connection_model< Tsodyks2Connection< TargetIdentifierPtrRport > >(
-      "tsodyks2_synapse" );
-  kernel()
-    .model_manager
-    .register_connection_model< Tsodyks2Connection< TargetIdentifierIndex > >(
-      "tsodyks2_synapse_hpc" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< Tsodyks2Connection< TargetIdentifierPtrRport > >(
+  //     "tsodyks2_synapse" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< Tsodyks2Connection< TargetIdentifierIndex > >(
+  //     "tsodyks2_synapse_hpc" );
 
 
   /* BeginDocumentation
      Name: ht_synapse_hpc - Variant of ht_synapse with low memory consumption.
      SeeAlso: synapsedict, ht_synapse, static_synapse_hpc
   */
-  kernel()
-    .model_manager
-    .register_connection_model< HTConnection< TargetIdentifierPtrRport > >(
-      "ht_synapse" );
-  kernel()
-    .model_manager
-    .register_connection_model< HTConnection< TargetIdentifierIndex > >(
-      "ht_synapse_hpc" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< HTConnection< TargetIdentifierPtrRport > >(
+  //     "ht_synapse" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< HTConnection< TargetIdentifierIndex > >(
+  //     "ht_synapse_hpc" );
 
 
   /* BeginDocumentation
@@ -685,14 +695,14 @@ ModelsModule::init( SLIInterpreter* )
      memory consumption.
      SeeAlso: synapsedict, stdp_dopamine_synapse, static_synapse_hpc
   */
-  kernel()
-    .model_manager
-    .register_connection_model< STDPDopaConnection< TargetIdentifierPtrRport > >(
-      "stdp_dopamine_synapse" );
-  kernel()
-    .model_manager
-    .register_connection_model< STDPDopaConnection< TargetIdentifierIndex > >(
-      "stdp_dopamine_synapse_hpc" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< STDPDopaConnection< TargetIdentifierPtrRport > >(
+  //     "stdp_dopamine_synapse" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< STDPDopaConnection< TargetIdentifierIndex > >(
+  //     "stdp_dopamine_synapse_hpc" );
 
   /* BeginDocumentation
      Name: vogels_sprekeler_synapse_hpc - Variant of vogels_sprekeler_synapse
@@ -700,23 +710,23 @@ ModelsModule::init( SLIInterpreter* )
      consumption.
      SeeAlso: synapsedict, vogels_sprekeler_synapse
   */
-  kernel()
-    .model_manager
-    .register_connection_model< VogelsSprekelerConnection< TargetIdentifierPtrRport > >(
-      "vogels_sprekeler_synapse" );
-  kernel()
-    .model_manager
-    .register_connection_model< VogelsSprekelerConnection< TargetIdentifierIndex > >(
-      "vogels_sprekeler_synapse_hpc" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< VogelsSprekelerConnection< TargetIdentifierPtrRport > >(
+  //     "vogels_sprekeler_synapse" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< VogelsSprekelerConnection< TargetIdentifierIndex > >(
+  //     "vogels_sprekeler_synapse_hpc" );
 
   /* BeginDocumentation
      Name: bernoulli_synapse - Static synapse with stochastic transmission
      SeeAlso: synapsedict, static_synapse, static_synapse_hom_w
   */
-  kernel()
-    .model_manager
-    .register_connection_model< BernoulliConnection< TargetIdentifierPtrRport > >(
-      "bernoulli_synapse" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< BernoulliConnection< TargetIdentifierPtrRport > >(
+  //     "bernoulli_synapse" );
 
   // resize all connection tables to number of registered synapses
   kernel().connection_manager.resize_connections();

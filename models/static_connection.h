@@ -172,6 +172,9 @@ public:
   {
     weight_ = w;
   }
+
+  void init_buffers(){};
+  void make_calibrate(){};
 };
 
 template < typename targetidentifierT >

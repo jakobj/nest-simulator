@@ -219,6 +219,8 @@ public:
     const index first_disabled_index ) = 0;
 
   virtual void print_connections( const thread tid ) const = 0;
+
+  virtual void prepare() = 0;
 };
 
 /**
@@ -574,6 +576,17 @@ public:
     }
     std::cout << std::endl;
     std::cout << "---------------------------------------\n";
+  }
+
+  void
+  prepare()
+  {
+    for ( typename std::vector< ConnectionT >::iterator it = C_.begin();
+          it != C_.end(); ++it )
+    {
+      ( *it ).init_buffers();
+      ( *it ).make_calibrate();
+    }
   }
 };
 
