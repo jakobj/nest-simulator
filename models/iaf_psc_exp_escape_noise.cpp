@@ -203,6 +203,7 @@ nest::iaf_psc_exp_escape_noise::iaf_psc_exp_escape_noise()
   , S_()
   , B_( *this )
   , activity_( std::vector< unsigned int >( 0 ) )
+  , u_( std::vector< double >( 0. ) )
   , time_driven_( false )
   , rho_( 0.01 )
   , delta_( 5. )
@@ -216,6 +217,7 @@ nest::iaf_psc_exp_escape_noise::iaf_psc_exp_escape_noise( const iaf_psc_exp_esca
   , S_( n.S_ )
   , B_( n.B_, *this )
   , activity_( n.activity_ )
+  , u_( n.u_ )
   , time_driven_( n.time_driven_ )
   , rho_( n.rho_ )
   , delta_( n.delta_ )
@@ -303,6 +305,7 @@ nest::iaf_psc_exp_escape_noise::calibrate()
     const size_t buffer_size = kernel().connection_manager.get_min_delay();
     activity_.resize( buffer_size );
     reset_activity_();
+    u_.resize( buffer_size );
   }
 
   V_.rng_ = kernel().rng_manager.get_rng( get_thread() );
@@ -351,6 +354,11 @@ nest::iaf_psc_exp_escape_noise::update( const Time& origin, const long from, con
 
     S_.i_syn_ex_ += V_.weighted_spikes_ex_;
     S_.i_syn_in_ += V_.weighted_spikes_in_;
+
+    if ( time_driven_ )
+    {
+      u_[ lag ] = P_.E_L_ + S_.V_m_;
+    }
 
     if ( V_.rng_->drand() < phi_() * h * 1e-3 ) // stochastic threshold crossing
     {

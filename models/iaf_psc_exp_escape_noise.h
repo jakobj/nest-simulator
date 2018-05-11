@@ -151,6 +151,8 @@ public:
   using Node::handle;
   using Node::handles_test_event;
   using Node::sends_secondary_event;
+  using Archiving_Node::get_activity;
+  using Archiving_Node::get_u;
 
   port send_test_event( Node&, rport, synindex, bool );
 
@@ -171,6 +173,16 @@ public:
 
   void get_status( DictionaryDatum& ) const;
   void set_status( const DictionaryDatum& );
+
+  double get_activity( const size_t lag ) const
+  {
+    return activity_[ lag ];
+  }
+
+  double get_u( const size_t lag ) const
+  {
+    return u_[ lag ];
+  }
 
 private:
   void init_state_( const Node& proto );
@@ -366,6 +378,7 @@ private:
   static RecordablesMap< iaf_psc_exp_escape_noise > recordablesMap_;
 
   std::vector< unsigned int > activity_;
+  std::vector< double > u_;
   bool time_driven_;
 
   // parameters of intensity function

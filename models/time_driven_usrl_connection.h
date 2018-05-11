@@ -128,11 +128,19 @@ public:
 
 private:
   double weight_; //!< connection weight
-  double E_;//!< eligibility trace
+  double E_; //!< eligibility trace
+  double tau_M_; //!< time constant of eligibility trace
 
+  // propagator for eligibility trace
+  double PE_;
+
+  // parameters of postsynaptic neuron
   double tau_ex_;
   double Tau_;
   double C_;
+  double Theta_;
+  double rho_;
+  double delta_;
 
   // propagators, required for computing PSP
   double P11ex_;
@@ -142,10 +150,12 @@ private:
   // dynamic variables, required for computing PSP
   double V_m_;
   double i_syn_ex_;
-  double weighted_spikes_ex_;
+  // double weighted_spikes_ex_;
 
   // buffers to store incoming spikes and process them after a delay
   RingBuffer spikes_ex_;
+
+  double phi_( const double u ) const;
 };
 
 template < typename targetidentifierT >
@@ -156,6 +166,7 @@ TimeDrivenUSRLConnection< targetidentifierT >::get_status(
   ConnectionBase::get_status( d );
   def< double >( d, names::weight, weight_ );
   def< long >( d, names::size_of, sizeof( *this ) );
+  def< double >( d, "E", E_ );
 }
 
 template < typename targetidentifierT >
@@ -166,6 +177,9 @@ TimeDrivenUSRLConnection< targetidentifierT >::set_status(
 {
   ConnectionBase::set_status( d, cm );
   updateValue< double >( d, names::weight, weight_ );
+  updateValue< double >( d, "E", E_ );
+  updateValue< double >( d, "V_m", V_m_ );
+  updateValue< double >( d, "i_syn_ex", i_syn_ex_ );
 }
 
 template < typename targetidentifierT >
@@ -183,6 +197,15 @@ TimeDrivenUSRLConnection< targetidentifierT >::make_calibrate()
   P11ex_ = std::exp( -h / tau_ex_ );
   P22_ = std::exp( -h / Tau_ );
   P21ex_ = propagator_32( tau_ex_, Tau_, C_, h );
+
+  PE_ = std::exp( -h / tau_M_ );
+}
+
+template < typename targetidentifierT >
+inline double
+TimeDrivenUSRLConnection< targetidentifierT >::phi_( const double u ) const
+{
+  return rho_ * std::exp( 1 / delta_ * ( u - Theta_ ) );
 }
 
 } // namespace

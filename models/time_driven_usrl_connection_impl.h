@@ -22,6 +22,8 @@
 
 #include "time_driven_usrl_connection.h"
 
+#include "archiving_node.h"
+
 namespace nest
 {
 
@@ -29,9 +31,16 @@ template < typename targetidentifierT >
 TimeDrivenUSRLConnection< targetidentifierT >::TimeDrivenUSRLConnection()
   : ConnectionBase()
   , weight_( 1.0 )
+  , E_( 0. )
+  , tau_M_( 500. )
   , tau_ex_( 2.0 )
   , Tau_( 10.0 )
   , C_( 250.0 )
+  , Theta_( -55. )
+  , rho_( 0.01 )
+  , delta_( 5. )
+  , V_m_( 0. )
+  , i_syn_ex_( 0. )
 {
 }
 
@@ -53,12 +62,21 @@ TimeDrivenUSRLConnection< targetidentifierT >::send( Event& e, thread t, const C
   while ( it != re.end() )
   {
 
+    // propagate PSP
     V_m_ = V_m_ * P22_ + i_syn_ex_ * P21ex_;
     i_syn_ex_ *= P11ex_;
-    weighted_spikes_ex_ = spikes_ex_.get_value( lag );
-    i_syn_ex_ += weighted_spikes_ex_;
+    // weighted_spikes_ex_ = spikes_ex_.get_value( lag );
+    // i_syn_ex_ += weighted_spikes_ex_;
+    i_syn_ex_ += spikes_ex_.get_value( lag );
 
-    std::cout << V_m_ << std::endl;
+    const Archiving_Node* post_node = static_cast< Archiving_Node* >( &re.get_receiver() );
+    const double s = post_node->get_activity( lag );
+    const double u = post_node->get_u( lag );
+
+    const double h = Time::get_resolution().get_ms();
+
+    // update elgibility trace
+    E_ = E_ * PE_ + (1. - PE_ ) * 1. / delta_ * V_m_ * ( s - phi_( u ) * h );
 
     const unsigned int v = re.get_coeffvalue( it );
     if ( v > 0 )

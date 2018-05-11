@@ -176,6 +176,9 @@ public:
    */
   double get_tau_Ca() const;
 
+  virtual double get_activity( const size_t lag ) const { assert( false ); };
+  virtual double get_u( const size_t lag ) const { assert( false ); };
+
 protected:
   /**
    * \fn void set_spiketime(Time const & t_sp, double offset)
