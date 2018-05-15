@@ -454,7 +454,7 @@ EventDeliveryManager::gather_spike_data_( const thread tid,
     }
 
 // communicate spikes using a single thread
-#pragma omp single
+#pragma omp single nowait
     {
 #ifndef DISABLE_COUNTS
       ++comm_rounds_spike_data;
