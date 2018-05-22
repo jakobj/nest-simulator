@@ -195,6 +195,7 @@ private:
   void set_activity_( const long lag );
 
   void reset_u_();
+  void set_u_( const long lag );
 
   // intensity function
   double phi_() const;
@@ -493,26 +494,27 @@ iaf_psc_exp_escape_noise::set_status( const DictionaryDatum& d )
 inline void
 iaf_psc_exp_escape_noise::reset_activity_()
 {
-  for ( std::vector< unsigned int >::iterator it = activity_.begin(); it < activity_.end(); ++it )
-  {
-    ( *it ) = 0;
-  }
+  activity_.assign( activity_.size(), 0 );
 }
 
 inline void
 iaf_psc_exp_escape_noise::reset_u_()
 {
-  for ( std::vector< double >::iterator it = u_.begin(); it < u_.end(); ++it )
-  {
-    ( *it ) = 0;
-  }
+  u_.assign( u_.size(), 0. );
 }
 
 inline void
 iaf_psc_exp_escape_noise::set_activity_( const long lag )
 {
-  assert( static_cast< size_t>( lag ) < activity_.size() );
+  assert( static_cast< size_t >( lag ) < activity_.size() );
   activity_[ lag ] = 1;
+}
+
+inline void
+iaf_psc_exp_escape_noise::set_u_( const long lag )
+{
+  assert( static_cast< size_t >( lag ) < u_.size() );
+  u_[ lag ] = P_.E_L_ + S_.V_m_;
 }
 
 inline double

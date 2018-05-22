@@ -325,6 +325,7 @@ nest::iaf_psc_exp_escape_noise::update( const Time& origin, const long from, con
   if ( time_driven_ )
   {
     reset_activity_();
+    reset_u_();
   }
 
   // evolve from timestep 'from' to timestep 'to' with steps of h each
@@ -358,7 +359,7 @@ nest::iaf_psc_exp_escape_noise::update( const Time& origin, const long from, con
 
     if ( time_driven_ )
     {
-      u_[ lag ] = P_.E_L_ + S_.V_m_;
+      set_u_( lag );
     }
 
     if ( V_.rng_->drand() < phi_() * h * 1e-3 ) // stochastic threshold crossing
