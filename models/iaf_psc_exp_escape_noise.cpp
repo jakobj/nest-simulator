@@ -306,6 +306,7 @@ nest::iaf_psc_exp_escape_noise::calibrate()
     activity_.resize( buffer_size );
     reset_activity_();
     u_.resize( buffer_size );
+    reset_u_();
   }
 
   V_.rng_ = kernel().rng_manager.get_rng( get_thread() );

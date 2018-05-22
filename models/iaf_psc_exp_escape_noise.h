@@ -194,6 +194,8 @@ private:
   void reset_activity_();
   void set_activity_( const long lag );
 
+  void reset_u_();
+
   // intensity function
   double phi_() const;
 
@@ -492,6 +494,15 @@ inline void
 iaf_psc_exp_escape_noise::reset_activity_()
 {
   for ( std::vector< unsigned int >::iterator it = activity_.begin(); it < activity_.end(); ++it )
+  {
+    ( *it ) = 0;
+  }
+}
+
+inline void
+iaf_psc_exp_escape_noise::reset_u_()
+{
+  for ( std::vector< double >::iterator it = u_.begin(); it < u_.end(); ++it )
   {
     ( *it ) = 0;
   }
