@@ -76,12 +76,12 @@ TimeDrivenUSRLConnection< targetidentifierT >::send( Event& e, thread t, const C
     const double h = Time::get_resolution().get_ms();
 
     // update elgibility trace
-    E_ = E_ * PE_ + (1. - PE_ ) * 1. / delta_ * V_m_ * ( s - phi_( u ) * h );
+    E_ = E_ * PE_ + (1. - PE_ ) * 1. / delta_ * V_m_ * ( s - phi_( u ) * h ) * 1e9;
 
     const unsigned int v = re.get_coeffvalue( it );
     if ( v > 0 )
     {
-      spikes_ex_.add_value( re.get_delay() + lag, e.get_weight() );
+      spikes_ex_.add_value( re.get_delay() + lag, 1. );
       SpikeEvent se( re, lag );
       se();
     }
