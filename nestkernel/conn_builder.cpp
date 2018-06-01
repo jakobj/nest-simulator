@@ -48,6 +48,18 @@
 #include "fdstream.h"
 #include "name.h"
 
+#ifdef SCOREP_USER_ENABLE
+#include "scorep/SCOREP_User.h"
+#else
+#define SCOREP_USER_GLOBAL_REGION_DEFINE(hndl)
+#define SCOREP_USER_REGION_INIT(hndl,name,type)
+#define SCOREP_USER_REGION_BEGIN(hndl,name,type)
+#define SCOREP_USER_REGION_ENTER(hndl)
+#define SCOREP_USER_REGION_END(hndl)
+#define SCOREP_USER_FUNC_BEGIN()
+#define SCOREP_USER_FUNC_END()
+#endif
+
 nest::ConnBuilder::ConnBuilder( const GIDCollection& sources,
   const GIDCollection& targets,
   const DictionaryDatum& conn_spec,
@@ -419,6 +431,7 @@ nest::ConnBuilder::single_connect_( index sgid,
   thread target_thread,
   librandom::RngPtr& rng )
 {
+  SCOREP_USER_FUNC_BEGIN()
   if ( this->requires_proxies() and not target.has_proxies() )
   {
     throw IllegalConnection(
@@ -553,6 +566,7 @@ nest::ConnBuilder::single_connect_( index sgid,
         weight );
     }
   }
+  SCOREP_USER_FUNC_END()
 }
 
 void
@@ -624,7 +638,7 @@ nest::OneToOneBuilder::OneToOneBuilder( const GIDCollection& sources,
 void
 nest::OneToOneBuilder::connect_()
 {
-
+  SCOREP_USER_FUNC_BEGIN()
 #pragma omp parallel
   {
     // get thread id
@@ -714,6 +728,7 @@ nest::OneToOneBuilder::connect_()
         lockPTR< WrappedThreadException >( new WrappedThreadException( err ) );
     }
   }
+  SCOREP_USER_FUNC_END()
 }
 
 /**

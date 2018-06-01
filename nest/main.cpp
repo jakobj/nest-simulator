@@ -29,6 +29,13 @@
 // Includes from sli:
 #include "interpret.h"
 
+#ifdef SCOREP_USER_ENABLE
+#include "scorep/SCOREP_User.h"
+#else
+#define SCOREP_USER_FUNC_BEGIN()
+#define SCOREP_USER_FUNC_END()
+#endif
+
 int
 main( int argc, char* argv[] )
 {
@@ -38,13 +45,13 @@ main( int argc, char* argv[] )
    * interpreter engine MUST NOT be global.
    */
   SLIInterpreter engine;
-
+  SCOREP_USER_FUNC_BEGIN()
   neststartup( &argc, &argv, engine );
 
   // start the interpreter session
   int exitcode = engine.execute();
 
   nestshutdown( exitcode );
-
+  SCOREP_USER_FUNC_END();
   return exitcode;
 }
