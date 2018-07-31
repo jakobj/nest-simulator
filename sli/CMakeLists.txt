@@ -91,17 +91,23 @@ target_link_libraries( sli_lib nestutil )
 # loading different readlines a problem for Python. See this
 # pull request for more information:
 # https://github.com/nest/nest-simulator/pull/323
+if ( NOT static-libraries )
 add_library( sli_readline gnureadline.cc gnureadline.h )
 target_link_libraries( sli_readline sli_lib nestutil ${READLINE_LIBRARIES} )
+endif ()
 
 # add the executable
+if ( NOT static-libraries )
 add_executable( sli puresli.cc )
 target_link_libraries( sli sli_lib sli_readline ${GSL_LIBRARIES} )
+endif ()
 
+if ( NOT static-libraries )
 target_include_directories( sli PRIVATE
     ${PROJECT_SOURCE_DIR}/libnestutil
     ${PROJECT_BINARY_DIR}/libnestutil
     )
+endif ()
 
 target_include_directories( sli_lib PRIVATE
     ${PROJECT_SOURCE_DIR}/libnestutil
@@ -112,6 +118,7 @@ set_target_properties( sli_lib
     OUTPUT_NAME sli
     )
 
+if ( NOT static-libraries )
 target_include_directories( sli_readline PRIVATE
     ${PROJECT_SOURCE_DIR}/libnestutil
     ${PROJECT_BINARY_DIR}/libnestutil
@@ -122,6 +129,13 @@ install( TARGETS sli_readline sli_lib sli
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     )
+else ( static-libraries )
+install( TARGETS sli_lib
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    )
+endif ()
 
 FILTER_HEADERS("${sli_sources}" install_headers )
 install( FILES ${install_headers} gnureadline.h
