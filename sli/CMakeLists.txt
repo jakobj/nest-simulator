@@ -129,7 +129,8 @@ install( TARGETS sli_readline sli_lib sli
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     )
-else ( static-libraries )
+else ()
+# There's no sli executable when linking statically
 install( TARGETS sli_lib
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
