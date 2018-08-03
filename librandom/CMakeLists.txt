@@ -43,8 +43,10 @@ set( random_sources
 add_library( random ${random_sources} )
 target_link_libraries( random sli_lib nestutil )
 
-add_executable( randomtest randomtest.cpp )
-target_link_libraries( randomtest random sli_lib nestutil ${GSL_LIBRARIES} )
+if ( NOT static-libraries )
+	add_executable( randomtest randomtest.cpp )
+	target_link_libraries( randomtest random sli_lib nestutil ${GSL_LIBRARIES} )
+endif ()
 
 target_include_directories( random PRIVATE
     ${PROJECT_SOURCE_DIR}/libnestutil
@@ -52,11 +54,13 @@ target_include_directories( random PRIVATE
     ${PROJECT_SOURCE_DIR}/sli
     )
 
+if ( NOT static-libraries )
 target_include_directories( randomtest PRIVATE
     ${PROJECT_SOURCE_DIR}/libnestutil
     ${PROJECT_BINARY_DIR}/libnestutil
     ${PROJECT_SOURCE_DIR}/sli
     )
+endif ()
 
 install( TARGETS random
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
