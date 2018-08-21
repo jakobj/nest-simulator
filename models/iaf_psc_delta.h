@@ -151,6 +151,8 @@ public:
   void get_status( DictionaryDatum& ) const;
   void set_status( const DictionaryDatum& );
 
+  virtual RingBuffer* get_target_buffer();
+
 private:
   void init_state_( const Node& proto );
   void init_buffers_();

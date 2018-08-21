@@ -377,4 +377,10 @@ nest::iaf_psc_delta::handle( DataLoggingRequest& e )
   B_.logger_.handle( e );
 }
 
+nest::RingBuffer*
+nest::iaf_psc_delta::get_target_buffer()
+{
+  return &B_.spikes_;
+}
+
 } // namespace

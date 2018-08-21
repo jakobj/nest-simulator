@@ -50,6 +50,7 @@ namespace nest
 class Model;
 class Subnet;
 class Archiving_Node;
+class RingBuffer;
 
 
 /**
@@ -855,6 +856,11 @@ public:
   {
     assert( false );
     return 0;
+  }
+
+  virtual RingBuffer* get_target_buffer()
+  {
+    assert( false );
   }
 
 private:

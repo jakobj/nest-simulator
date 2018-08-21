@@ -59,6 +59,7 @@ template < typename targetidentifierT >
 class StaticConnection : public Connection< targetidentifierT >
 {
   double weight_;
+  RingBuffer* target_buffer_;
 
 public:
   // this line determines which common properties to use
@@ -73,6 +74,7 @@ public:
   StaticConnection()
     : ConnectionBase()
     , weight_( 1.0 )
+    , target_buffer_( NULL )
   {
   }
 
@@ -83,6 +85,7 @@ public:
   StaticConnection( const StaticConnection& rhs )
     : ConnectionBase( rhs )
     , weight_( rhs.weight_ )
+    , target_buffer_( rhs.target_buffer_ )
   {
   }
 
@@ -151,6 +154,7 @@ public:
   {
     ConnTestDummyNode dummy_target;
     ConnectionBase::check_connection_( dummy_target, s, t, receptor_type );
+    target_buffer_ = t.get_target_buffer();
   }
 
   void
@@ -160,7 +164,10 @@ public:
     e.set_delay( get_delay_steps() );
     e.set_receiver( *get_target( tid ) );
     e.set_rport( get_rport() );
-    e();
+    // e();
+    target_buffer_->add_value(
+      e.get_rel_delivery_steps( kernel().simulation_manager.get_slice_origin() ),
+      e.get_weight() );
   }
 
   void get_status( DictionaryDatum& d ) const;
