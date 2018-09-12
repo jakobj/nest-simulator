@@ -153,6 +153,8 @@ public:
    */
   Time const& get_stamp() const;
 
+  long get_stamp_steps() const;
+
   /**
    * Set the transmission delay of the event.
    * The delay refers to the time until the event is
@@ -386,6 +388,13 @@ SpikeEvent::get_multiplicity() const
 {
   return multiplicity_;
 }
+
+/**
+ * Event used to deliver spikes from MPI buffer to neurons.
+ */
+class RemoteSpikeEvent : public SpikeEvent
+{
+};
 
 
 /**
@@ -1318,6 +1327,16 @@ inline Time const&
 Event::get_stamp() const
 {
   return stamp_;
+}
+
+inline long
+Event::get_stamp_steps() const
+{
+  if ( stamp_steps_ == 0 )
+  {
+    stamp_steps_ = stamp_.get_steps();
+  }
+  return stamp_steps_;
 }
 
 inline void

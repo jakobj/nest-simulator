@@ -592,7 +592,7 @@ EventDeliveryManager::deliver_events_( const thread tid,
   assert( kernel().simulation_manager.get_to_step()
     == kernel().connection_manager.get_min_delay() );
 
-  SpikeEvent se;
+  RemoteSpikeEvent se;
 
   // prepare Time objects for every possible time stamp within min_delay_
   std::vector< Time > prepared_timestamps(

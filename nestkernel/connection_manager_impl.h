@@ -69,6 +69,16 @@ ConnectionManager::send( const thread tid,
 }
 
 inline void
+ConnectionManager::send( const thread tid,
+  const synindex syn_id,
+  const index lcid,
+  const std::vector< ConnectorModel* >& cm,
+  RemoteSpikeEvent& se )
+{
+  connections_[ tid ][ syn_id ]->send( tid, lcid, cm, se );
+}
+
+inline void
 ConnectionManager::send_to_devices( const thread tid,
   const index source_gid,
   Event& e )

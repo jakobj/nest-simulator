@@ -246,6 +246,12 @@ Node::handle( SpikeEvent& )
   throw UnexpectedEvent();
 }
 
+void
+Node::handle( const double weight, const int multiplicity, const long stamp_steps, const long delay_steps, const rport rp, const double offset, const index sender_gid )
+{
+  throw UnexpectedEvent();
+}
+
 port
 Node::handles_test_event( SpikeEvent&, rport )
 {

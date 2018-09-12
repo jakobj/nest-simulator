@@ -270,6 +270,12 @@ public:
     const std::vector< ConnectorModel* >& cm,
     Event& e );
 
+  void send( const thread tid,
+    const synindex syn_id,
+    const index lcid,
+    const std::vector< ConnectorModel* >& cm,
+    RemoteSpikeEvent& e );
+
   /**
    * Send event e to all device targets of source source_gid
    */
