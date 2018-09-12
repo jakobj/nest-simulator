@@ -163,6 +163,12 @@ public:
     e();
   }
 
+  void
+  send( RemoteSpikeEvent& se, const thread tid, const CommonSynapseProperties& )
+  {
+    get_target( tid )->handle( weight_, se.get_multiplicity(), se.get_stamp().get_steps(), get_delay_steps(), se.get_rport(), se.get_offset(), se.get_sender_gid() );
+  }
+
   void get_status( DictionaryDatum& d ) const;
 
   void set_status( const DictionaryDatum& d, ConnectorModel& cm );

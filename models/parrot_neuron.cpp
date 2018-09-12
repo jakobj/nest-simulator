@@ -98,13 +98,18 @@ parrot_neuron::set_status( const DictionaryDatum& d )
 void
 parrot_neuron::handle( SpikeEvent& e )
 {
-  // Repeat only spikes incoming on port 0, port 1 will be ignored
-  if ( 0 == e.get_rport() )
-  {
-    B_.n_spikes_.add_value( e.get_rel_delivery_steps(
-                              kernel().simulation_manager.get_slice_origin() ),
-      static_cast< double >( e.get_multiplicity() ) );
-  }
+  handle( e.get_weight(), e.get_multiplicity(), e.get_stamp().get_steps(), e.get_delay(), e.get_rport(), e.get_offset(), e.get_sender_gid() );
 }
+
+void
+parrot_neuron::handle( const double weight, const int multiplicity, const long stamp_steps, const long delay_steps, const rport rp, const double offset, const index sender_gid )
+{
+  assert( delay_steps  > 0 );
+  const Time origin = kernel().simulation_manager.get_slice_origin();
+  const long rel_delivery_steps = stamp_steps + delay_steps - 1 - origin.get_steps( );
+
+  B_.n_spikes_.add_value( rel_delivery_steps, weight );
+}
+
 
 } // namespace

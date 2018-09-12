@@ -350,19 +350,26 @@ nest::iaf_psc_exp::update( const Time& origin, const long from, const long to )
 void
 nest::iaf_psc_exp::handle( SpikeEvent& e )
 {
-  assert( e.get_delay() > 0 );
+  handle( e.get_weight(), e.get_multiplicity(), e.get_stamp().get_steps(), e.get_delay(), e.get_rport(), e.get_offset(), e.get_sender_gid() );
+}
 
-  if ( e.get_weight() >= 0.0 )
+void
+nest::iaf_psc_exp::handle( const double weight, const int multiplicity, const long stamp_steps, const long delay_steps, const rport rp, const double offset, const index sender_gid )
+{
+  assert( delay_steps > 0 );
+  const Time origin = kernel().simulation_manager.get_slice_origin();
+  const long rel_delivery_steps = stamp_steps + delay_steps - 1 - origin.get_steps( );
+
+
+  if ( weight >= 0.0 )
   {
-    B_.spikes_ex_.add_value( e.get_rel_delivery_steps(
-                               kernel().simulation_manager.get_slice_origin() ),
-      e.get_weight() * e.get_multiplicity() );
+    B_.spikes_ex_.add_value( rel_delivery_steps,
+      weight * multiplicity );
   }
   else
   {
-    B_.spikes_in_.add_value( e.get_rel_delivery_steps(
-                               kernel().simulation_manager.get_slice_origin() ),
-      e.get_weight() * e.get_multiplicity() );
+    B_.spikes_in_.add_value( rel_delivery_steps,
+      weight * multiplicity );
   }
 }
 

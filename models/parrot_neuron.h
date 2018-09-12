@@ -102,6 +102,7 @@ public:
 
   void handle( SpikeEvent& );
   port handles_test_event( SpikeEvent&, rport );
+  void handle( const double weight, const int multiplicity, const long stamp_steps, const long delay_steps, const rport rp = 0, const double offset = 0.0, const index sender_gid = 0 );
 
   void get_status( DictionaryDatum& ) const;
   void set_status( const DictionaryDatum& );

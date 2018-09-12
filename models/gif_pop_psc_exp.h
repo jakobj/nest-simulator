@@ -157,6 +157,7 @@ public:
   void handle( SpikeEvent& );
   void handle( CurrentEvent& );
   void handle( DataLoggingRequest& );
+  void handle( const double weight, const int multiplicity, const long stamp_steps, const long delay_steps, const rport rp=0, const double offset=0.0, const index sender_gid=0 );
 
   port handles_test_event( SpikeEvent&, rport );
   port handles_test_event( CurrentEvent&, rport );

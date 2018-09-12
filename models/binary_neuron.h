@@ -84,6 +84,7 @@ public:
   void handle( SpikeEvent& );
   void handle( CurrentEvent& );
   void handle( DataLoggingRequest& );
+  void handle( const double weight, const int multiplicity, const long stamp_steps, const long delay_steps, const rport rp = 0, const double offset = 0.0, const index sender_gid = 0 );
 
   port handles_test_event( SpikeEvent&, rport );
   port handles_test_event( CurrentEvent&, rport );
@@ -138,7 +139,7 @@ private:
     double h_;             //!< total input current to neuron
     double last_in_gid_;   //!< gid of the last spike being received
     Time t_next_;          //!< time point of next update
-    Time t_last_in_spike_; //!< time point of last input spike seen
+    long t_last_in_spike_steps_; //!< time point of last input spike seen
 
     State_(); //!< Default initialization
 
@@ -332,7 +333,7 @@ binary_neuron< TGainfunction >::State_::State_()
   , h_( 0.0 )
   , last_in_gid_( 0 )
   , t_next_( Time::neg_inf() )          // mark as not initialized
-  , t_last_in_spike_( Time::neg_inf() ) // mark as not intialized
+  , t_last_in_spike_steps_( Time::neg_inf().get_steps() ) // mark as not intialized
 {
 }
 
@@ -514,7 +515,16 @@ template < class TGainfunction >
 void
 binary_neuron< TGainfunction >::handle( SpikeEvent& e )
 {
-  assert( e.get_delay() > 0 );
+  handle( e.get_weight(), e.get_multiplicity(), e.get_stamp().get_steps(), e.get_delay(), e.get_rport(), e.get_offset(), e.get_sender_gid() );
+}
+
+template < class TGainfunction >
+void
+binary_neuron< TGainfunction >::handle( const double weight, const int multiplicity, const long stamp_steps, const long delay_steps, const rport rp, const double offset, const index sender_gid )
+{
+  assert( delay_steps > 0 );
+  const Time origin = kernel().simulation_manager.get_slice_origin();
+  const long rel_delivery_steps = stamp_steps + delay_steps - 1 - origin.get_steps( );
 
   // The following logic implements the encoding:
   // A single spike signals a transition to 0 state, two spikes in same time
@@ -534,41 +544,38 @@ binary_neuron< TGainfunction >::handle( SpikeEvent& e )
   // correct.
 
 
-  long m = e.get_multiplicity();
-  long gid = e.get_sender_gid();
-  const Time& t_spike = e.get_stamp();
+  long m = multiplicity;
+  long gid = sender_gid;
+  // const Time& t_spike = e.get_stamp();
 
   if ( m == 1 )
   { // multiplicity == 1, either a single 1->0 event or the first or second of a
     // pair of 0->1 events
-    if ( gid == S_.last_in_gid_ && t_spike == S_.t_last_in_spike_ )
+    if ( gid == S_.last_in_gid_ && stamp_steps == S_.t_last_in_spike_steps_ )
     {
       // received twice the same gid, so transition 0->1
       // take double weight to compensate for subtracting first event
-      B_.spikes_.add_value( e.get_rel_delivery_steps(
-                              kernel().simulation_manager.get_slice_origin() ),
-        2.0 * e.get_weight() );
+      B_.spikes_.add_value( rel_delivery_steps,
+        2.0 * weight );
     }
     else
     {
       // count this event negatively, assuming it comes as single event
       // transition 1->0
-      B_.spikes_.add_value( e.get_rel_delivery_steps(
-                              kernel().simulation_manager.get_slice_origin() ),
-        -e.get_weight() );
+      B_.spikes_.add_value( rel_delivery_steps,
+        -weight );
     }
   }
   else // multiplicity != 1
     if ( m == 2 )
   {
     // count this event positively, transition 0->1
-    B_.spikes_.add_value( e.get_rel_delivery_steps(
-                            kernel().simulation_manager.get_slice_origin() ),
-      e.get_weight() );
+    B_.spikes_.add_value( rel_delivery_steps,
+      weight );
   }
 
   S_.last_in_gid_ = gid;
-  S_.t_last_in_spike_ = t_spike;
+  S_.t_last_in_spike_steps_ = stamp_steps;
 }
 
 template < class TGainfunction >
