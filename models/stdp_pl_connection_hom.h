@@ -236,7 +236,7 @@ STDPPLConnectionHom< targetidentifierT >::send( Event& e,
   thread t,
   const STDPPLHomCommonProperties& cp )
 {
-  send( e.get_stamp(), e.get_offset(), e.get_source_gid(), e.get_port()
+  send( e.get_stamp(), e.get_offset(), e.get_sender_gid(), e.get_port(), t, cp );
 }
 
 template < typename targetidentifierT >
