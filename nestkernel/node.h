@@ -858,7 +858,7 @@ public:
     return 0;
   }
 
-  virtual RingBuffer* get_target_buffer()
+  virtual RingBuffer* get_target_buffer( const double weight )
   {
     assert( false );
   }

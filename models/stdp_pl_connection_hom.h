@@ -61,6 +61,7 @@
 
 // Includes from nestkernel:
 #include "connection.h"
+#include "ring_buffer.h"
 
 namespace nest
 {
@@ -183,7 +184,7 @@ public:
     ConnTestDummyNode dummy_target;
 
     ConnectionBase::check_connection_( dummy_target, s, t, receptor_type );
-
+    target_buffer_ = t.get_target_buffer( weight_ );
     t.register_stdp_connection( t_lastspike_ - get_delay() );
   }
 
@@ -211,6 +212,7 @@ private:
   double weight_;
   double Kplus_;
   double t_lastspike_;
+  RingBuffer* target_buffer_;
 };
 
 //
@@ -267,7 +269,10 @@ STDPPLConnectionHom< targetidentifierT >::send( Event& e,
   e.set_weight( weight_ );
   e.set_delay( get_delay_steps() );
   e.set_rport( get_rport() );
-  e();
+  // e();
+  target_buffer_->add_value(
+    e.get_rel_delivery_steps( kernel().simulation_manager.get_slice_origin() ),
+    e.get_weight() );
 
   Kplus_ =
     Kplus_ * std::exp( ( t_lastspike_ - t_spike ) * cp.tau_plus_inv_ ) + 1.0;
@@ -281,6 +286,7 @@ STDPPLConnectionHom< targetidentifierT >::STDPPLConnectionHom()
   , weight_( 1.0 )
   , Kplus_( 0.0 )
   , t_lastspike_( 0.0 )
+  , target_buffer_( NULL )
 {
 }
 
@@ -291,6 +297,7 @@ STDPPLConnectionHom< targetidentifierT >::STDPPLConnectionHom(
   , weight_( rhs.weight_ )
   , Kplus_( rhs.Kplus_ )
   , t_lastspike_( rhs.t_lastspike_ )
+  , target_buffer_( rhs.target_buffer_ )
 {
 }
 

@@ -154,7 +154,7 @@ public:
   {
     ConnTestDummyNode dummy_target;
     ConnectionBase::check_connection_( dummy_target, s, t, receptor_type );
-    target_buffer_ = t.get_target_buffer();
+    target_buffer_ = t.get_target_buffer( weight_ );
   }
 
   void

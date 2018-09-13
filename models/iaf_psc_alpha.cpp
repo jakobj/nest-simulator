@@ -421,4 +421,17 @@ iaf_psc_alpha::handle( DataLoggingRequest& e )
   B_.logger_.handle( e );
 }
 
+nest::RingBuffer*
+nest::iaf_psc_alpha::get_target_buffer( const double weight )
+{
+  if ( weight > 0.0 )
+  {
+    return &B_.ex_spikes_;
+  }
+  else
+  {
+    return &B_.in_spikes_;
+  }
+}
+
 } // namespace
