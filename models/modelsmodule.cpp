@@ -128,6 +128,7 @@
 #include "rate_connection_instantaneous.h"
 #include "rate_connection_delayed.h"
 #include "spike_dilutor.h"
+#include "direct_static_connection.h"
 #include "static_connection.h"
 #include "static_connection_hom_w.h"
 #include "stdp_connection.h"
@@ -455,6 +456,14 @@ ModelsModule::init( SLIInterpreter* )
     .register_connection_model< StaticConnection< TargetIdentifierIndex > >(
       "static_synapse_hpc" );
 
+  kernel()
+    .model_manager
+    .register_connection_model< DirectStaticConnection< TargetIdentifierPtrRport > >(
+      "direct_static_synapse" );
+  kernel()
+    .model_manager
+    .register_connection_model< DirectStaticConnection< TargetIdentifierIndex > >(
+      "direct_static_synapse_hpc" );
 
   /* BeginDocumentation
      Name: static_synapse_hom_w_hpc - Variant of static_synapse_hom_w with low
