@@ -159,7 +159,9 @@ public:
   virtual index send( const thread tid,
     const index lcid,
     const std::vector< ConnectorModel* >& cm,
-    RemoteSpikeEvent& e ) = 0;
+    const Time stamp,
+    const double offset,
+    const index source_gid ) = 0;
 
   virtual void send_weight_event( const thread tid,
     const unsigned int lcid,
@@ -429,7 +431,9 @@ public:
   send( const thread tid,
     const index lcid,
     const std::vector< ConnectorModel* >& cm,
-    RemoteSpikeEvent& e )
+    const Time stamp,
+    const double offset,
+    const index source_gid )
   {
     typename ConnectionT::CommonPropertiesType const& cp =
       static_cast< GenericConnectorModel< ConnectionT >* >( cm[ syn_id_ ] )
@@ -443,11 +447,11 @@ public:
       const bool has_source_subsequent_targets =
         conn.has_source_subsequent_targets();
 
-      e.set_port( lcid + lcid_offset );
       if ( not is_disabled )
       {
-        conn.send( e, tid, cp );
-        send_weight_event( tid, lcid + lcid_offset, e, cp );
+        const port p = lcid + lcid_offset;
+        conn.send( stamp, offset, source_gid, p, tid, cp );
+        // send_weight_event( tid, lcid + lcid_offset, e, cp ); // TODO@no-event: enable again
       }
       if ( not has_source_subsequent_targets )
       {

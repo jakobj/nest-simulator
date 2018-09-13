@@ -274,7 +274,9 @@ public:
     const synindex syn_id,
     const index lcid,
     const std::vector< ConnectorModel* >& cm,
-    RemoteSpikeEvent& e );
+    const Time stamp,
+    const double offset,
+    const index source_gid );
 
   /**
    * Send event e to all device targets of source source_gid

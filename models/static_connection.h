@@ -164,9 +164,9 @@ public:
   }
 
   void
-  send( RemoteSpikeEvent& se, const thread tid, const CommonSynapseProperties& )
+  send( const Time stamp, const double offset, const index source_gid, const port p, const thread tid, const CommonSynapseProperties& )
   {
-    get_target( tid )->handle( weight_, se.get_multiplicity(), se.get_stamp().get_steps(), get_delay_steps(), se.get_rport(), se.get_offset(), se.get_sender_gid() );
+    get_target( tid )->handle( weight_, 1, stamp.get_steps(), get_delay_steps(), get_rport(), offset, source_gid );
   }
 
   void get_status( DictionaryDatum& d ) const;

@@ -73,9 +73,11 @@ ConnectionManager::send( const thread tid,
   const synindex syn_id,
   const index lcid,
   const std::vector< ConnectorModel* >& cm,
-  RemoteSpikeEvent& se )
+  const Time stamp,
+  const double offset,
+  const index source_gid )
 {
-  connections_[ tid ][ syn_id ]->send( tid, lcid, cm, se );
+  connections_[ tid ][ syn_id ]->send( tid, lcid, cm, stamp, offset, source_gid );
 }
 
 inline void

@@ -592,8 +592,6 @@ EventDeliveryManager::deliver_events_( const thread tid,
   assert( kernel().simulation_manager.get_to_step()
     == kernel().connection_manager.get_min_delay() );
 
-  RemoteSpikeEvent se;
-
   // prepare Time objects for every possible time stamp within min_delay_
   std::vector< Time > prepared_timestamps(
     kernel().connection_manager.get_min_delay() );
@@ -630,16 +628,12 @@ EventDeliveryManager::deliver_events_( const thread tid,
 
       if ( spike_data.get_tid() == tid )
       {
-        se.set_stamp( prepared_timestamps[ spike_data.get_lag() ] );
-        se.set_offset( spike_data.get_offset() );
-
         const index syn_id = spike_data.get_syn_id();
         const index lcid = spike_data.get_lcid();
         const index source_gid =
           kernel().connection_manager.get_source_gid( tid, syn_id, lcid );
-        se.set_sender_gid( source_gid );
 
-        kernel().connection_manager.send( tid, syn_id, lcid, cm, se );
+        kernel().connection_manager.send( tid, syn_id, lcid, cm, prepared_timestamps[ spike_data.get_lag() ], spike_data.get_offset(), source_gid );
       }
 
       // break if this was the last valid entry from this rank
