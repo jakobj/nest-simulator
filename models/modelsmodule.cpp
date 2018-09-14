@@ -136,7 +136,7 @@
 // #include "stdp_connection_hom.h"
 // #include "stdp_triplet_connection.h"
 // #include "stdp_dopa_connection.h"
-#include "stdp_pl_connection_hom.h"
+// #include "stdp_pl_connection_hom.h"
 // #include "tsodyks2_connection.h"
 // #include "tsodyks_connection.h"
 // #include "tsodyks_connection_hom.h"
@@ -519,19 +519,19 @@ ModelsModule::init( SLIInterpreter* )
   //     "stdp_synapse_hpc" );
 
 
-  /* BeginDocumentation
-     Name: stdp_pl_synapse_hom_hpc - Variant of stdp_pl_synapse_hom with low
-     memory consumption.
-     SeeAlso: synapsedict, stdp_pl_synapse_hom, static_synapse_hpc
-  */
-  kernel()
-    .model_manager
-    .register_connection_model< STDPPLConnectionHom< TargetIdentifierPtrRport > >(
-      "stdp_pl_synapse_hom" );
-  kernel()
-    .model_manager
-    .register_connection_model< STDPPLConnectionHom< TargetIdentifierIndex > >(
-      "stdp_pl_synapse_hom_hpc" );
+  // /* BeginDocumentation
+  //    Name: stdp_pl_synapse_hom_hpc - Variant of stdp_pl_synapse_hom with low
+  //    memory consumption.
+  //    SeeAlso: synapsedict, stdp_pl_synapse_hom, static_synapse_hpc
+  // */
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< STDPPLConnectionHom< TargetIdentifierPtrRport > >(
+  //     "stdp_pl_synapse_hom" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< STDPPLConnectionHom< TargetIdentifierIndex > >(
+  //     "stdp_pl_synapse_hom_hpc" );
 
 
   // /* BeginDocumentation

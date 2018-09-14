@@ -73,11 +73,11 @@ ConnectionManager::send( const thread tid,
   const synindex syn_id,
   const index lcid,
   const std::vector< ConnectorModel* >& cm,
-  const Time stamp,
+  const long stamp_steps,
   const double offset,
   const index source_gid )
 {
-  connections_[ tid ][ syn_id ]->send( tid, lcid, cm, stamp, offset, source_gid );
+  connections_[ tid ][ syn_id ]->send( tid, lcid, cm, stamp_steps, offset, source_gid );
 }
 
 inline void

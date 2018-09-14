@@ -274,7 +274,7 @@ public:
     const synindex syn_id,
     const index lcid,
     const std::vector< ConnectorModel* >& cm,
-    const Time stamp,
+    const long stamp_steps,
     const double offset,
     const index source_gid );
 

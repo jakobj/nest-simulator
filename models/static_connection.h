@@ -164,9 +164,9 @@ public:
   }
 
   void
-  send( const Time stamp, const double offset, const index source_gid, const port p, const thread tid, const CommonSynapseProperties& )
+  send( const long stamp_steps, const double offset, const index source_gid, const port p, const thread tid, const CommonSynapseProperties& )
   {
-    get_target( tid )->handle( weight_, 1, stamp.get_steps(), get_delay_steps(), get_rport(), offset, source_gid );
+    get_target( tid )->handle( weight_, 1, stamp_steps, get_delay_steps(), get_rport(), offset, source_gid );
   }
 
   void get_status( DictionaryDatum& d ) const;

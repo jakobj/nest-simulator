@@ -593,14 +593,14 @@ EventDeliveryManager::deliver_events_( const thread tid,
     == kernel().connection_manager.get_min_delay() );
 
   // prepare Time objects for every possible time stamp within min_delay_
-  std::vector< Time > prepared_timestamps(
+  std::vector< long > prepared_timestamps_steps(
     kernel().connection_manager.get_min_delay() );
   for ( size_t lag = 0;
         lag < ( size_t ) kernel().connection_manager.get_min_delay();
         ++lag )
   {
-    prepared_timestamps[ lag ] =
-      kernel().simulation_manager.get_clock() + Time::step( lag + 1 );
+    prepared_timestamps_steps[ lag ] =
+      ( kernel().simulation_manager.get_clock() + Time::step( lag + 1 ) ).get_steps();
   }
 
   for ( thread rank = 0; rank < kernel().mpi_manager.get_num_processes();
@@ -633,7 +633,7 @@ EventDeliveryManager::deliver_events_( const thread tid,
         const index source_gid =
           kernel().connection_manager.get_source_gid( tid, syn_id, lcid );
 
-        kernel().connection_manager.send( tid, syn_id, lcid, cm, prepared_timestamps[ spike_data.get_lag() ], spike_data.get_offset(), source_gid );
+        kernel().connection_manager.send( tid, syn_id, lcid, cm, prepared_timestamps_steps[ spike_data.get_lag() ], spike_data.get_offset(), source_gid );
       }
 
       // break if this was the last valid entry from this rank

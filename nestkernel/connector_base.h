@@ -159,7 +159,7 @@ public:
   virtual index send( const thread tid,
     const index lcid,
     const std::vector< ConnectorModel* >& cm,
-    const Time stamp,
+    const long stamp_steps,
     const double offset,
     const index source_gid ) = 0;
 
@@ -431,7 +431,7 @@ public:
   send( const thread tid,
     const index lcid,
     const std::vector< ConnectorModel* >& cm,
-    const Time stamp,
+    const long stamp_steps,
     const double offset,
     const index source_gid )
   {
@@ -450,7 +450,7 @@ public:
       if ( not is_disabled )
       {
         const port p = lcid + lcid_offset;
-        conn.send( stamp, offset, source_gid, p, tid, cp );
+        conn.send( stamp_steps, offset, source_gid, p, tid, cp );
         // send_weight_event( tid, lcid + lcid_offset, e, cp ); // TODO@no-event: enable again
       }
       if ( not has_source_subsequent_targets )
