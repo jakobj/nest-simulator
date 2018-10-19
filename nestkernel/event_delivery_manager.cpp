@@ -94,15 +94,11 @@ EventDeliveryManager::initialize()
     const thread tid = kernel().vp_manager.get_thread_id();
     spike_register_[ tid ].resize(
       num_threads,
-      std::vector< std::vector< Target > >(
-        kernel().connection_manager.get_min_delay(),
-        std::vector< Target >() ) );
+      std::vector< std::vector< Target > >( 0, std::vector< Target >() ) );
 
     off_grid_spike_register_[ tid ].resize(
       num_threads,
-      std::vector< std::vector< OffGridTarget > >(
-        kernel().connection_manager.get_min_delay(),
-        std::vector< OffGridTarget >() ) );
+      std::vector< std::vector< OffGridTarget > >( 0, std::vector< OffGridTarget >() ) );
   } // of omp parallel
 }
 
@@ -459,17 +455,17 @@ EventDeliveryManager::collocate_spike_data_buffers_( const thread tid,
   // not be fit into the MPI buffer.
   bool is_spike_register_empty = true;
 
-  // First dimension: loop over writing thread
-  for ( typename std::vector< std::
-            vector< std::vector< std::vector< TargetT > > > >::iterator it =
-          spike_register.begin();
-        it != spike_register.end();
-        ++it )
+  // Third dimension: loop over lags
+  for ( unsigned int lag = 0; lag < kernel().connection_manager.get_min_delay(); ++lag )
   {
     // Second dimension: fixed reading thread
 
-    // Third dimension: loop over lags
-    for ( unsigned int lag = 0; lag < ( *it )[ tid ].size(); ++lag )
+    // First dimension: loop over writing thread
+    for ( typename std::vector< std::
+            vector< std::vector< std::vector< TargetT > > > >::iterator it =
+            spike_register.begin();
+          it != spike_register.end();
+          ++it )
     {
       // Fourth dimension: loop over entries
       for ( typename std::vector< TargetT >::iterator iiit =
