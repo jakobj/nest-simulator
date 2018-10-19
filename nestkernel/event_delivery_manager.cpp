@@ -635,9 +635,9 @@ EventDeliveryManager::deliver_events_( const thread tid,
 
         const index syn_id = spike_data.get_syn_id();
         const index lcid = spike_data.get_lcid();
-        const index source_gid =
-          kernel().connection_manager.get_source_gid( tid, syn_id, lcid );
-        se.set_sender_gid( source_gid );
+        // const index source_gid =
+        //   kernel().connection_manager.get_source_gid( tid, syn_id, lcid );
+        // se.set_sender_gid( source_gid );
 
         kernel().connection_manager.send( tid, syn_id, lcid, cm, se );
       }
