@@ -217,6 +217,9 @@ public:
    */
   virtual void remove_disabled_connections(
     const index first_disabled_index ) = 0;
+
+  virtual void prefetch_connection( const index lcid ) = 0;
+  virtual void prefetch_neuron( const thread tid, const index lcid ) = 0;
 };
 
 /**
@@ -399,6 +402,8 @@ public:
     index lcid_offset = 0;
     while ( true )
     {
+      prefetch_connection( lcid + lcid_offset + 1 );
+
       ConnectionT& conn = C_[ lcid + lcid_offset ];
       const bool is_disabled = conn.is_disabled();
       const bool has_source_subsequent_targets =
@@ -414,6 +419,9 @@ public:
       {
         break;
       }
+
+      prefetch_neuron( tid, lcid + lcid_offset + 1 );
+
       ++lcid_offset;
     }
 
@@ -520,6 +528,25 @@ public:
     assert( C_[ first_disabled_index ].is_disabled() );
     C_.erase( C_.begin() + first_disabled_index, C_.end() );
   }
+
+  void
+  prefetch_connection( const index lcid )
+  {
+    if ( lcid < C_.size() )
+    {
+      __builtin_prefetch( &C_[ lcid ], 1, 2 );
+    }
+  }
+
+  void
+  prefetch_neuron( const thread tid, const index lcid )
+  {
+    if ( lcid < C_.size() )
+    {
+      __builtin_prefetch( C_[ lcid ].get_target( tid ), 1, 2 );
+    }
+  }
+
 };
 
 } // of namespace nest
