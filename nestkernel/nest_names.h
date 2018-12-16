@@ -84,7 +84,8 @@ extern const Name b;
 extern const Name beta;
 extern const Name beta_Ca;
 extern const Name binary;
-extern const Name buffer_size_secondary_events;
+extern const Name send_buffer_size_secondary_events;
+extern const Name recv_buffer_size_secondary_events;
 extern const Name buffer_size_spike_data;
 extern const Name buffer_size_target_data;
 

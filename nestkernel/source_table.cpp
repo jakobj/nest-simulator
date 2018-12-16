@@ -257,7 +257,7 @@ nest::SourceTable::compute_buffer_pos_for_unique_secondary_sources(
   {
     // compute receive buffer positions for all unique pairs of source
     // gid and synapse-type id on this MPI rank
-    std::vector< size_t > recv_buffer_position_by_rank(
+    std::vector< int > recv_counts_secondary_events_in_int_per_rank(
       kernel().mpi_manager.get_num_processes(), 0 );
 
     for ( std::set< std::pair< index, size_t > >::const_iterator cit =
@@ -272,21 +272,22 @@ nest::SourceTable::compute_buffer_pos_for_unique_secondary_sources(
           .model_manager.get_secondary_event_prototype( cit->second, tid )
           .size();
 
-      buffer_pos_of_source_gid_syn_id.insert(
-        std::make_pair( pack_source_gid_and_syn_id( cit->first, cit->second ),
-          recv_buffer_position_by_rank[ source_rank ] ) );
-      recv_buffer_position_by_rank[ source_rank ] += event_size;
+      buffer_pos_of_source_gid_syn_id.insert( std::make_pair(
+        pack_source_gid_and_syn_id( cit->first, cit->second ),
+        recv_counts_secondary_events_in_int_per_rank[ source_rank ] ) );
+
+      recv_counts_secondary_events_in_int_per_rank[ source_rank ] += event_size;
     }
 
-    // compute maximal chunksize per source rank and determine global
-    // maximal chunksize; will need to be taken into account when
-    // filling secondary_recv_buffer_pos_ in ConnectionManager
-    std::vector< long > max_uint_count( 1,
-      *std::max_element( recv_buffer_position_by_rank.begin(),
-        recv_buffer_position_by_rank.end() ) );
-    kernel().mpi_manager.communicate_Allreduce_max_in_place( max_uint_count );
-    kernel().mpi_manager.set_chunk_size_secondary_events_in_int(
-      max_uint_count[ 0 ] + 1 );
+    // each chunk needs to contain one additional int that can be used
+    // to communicate whether waveform relaxation has converged
+    for ( thread rank = 0; rank < kernel().mpi_manager.get_num_processes(); ++rank )
+    {
+      recv_counts_secondary_events_in_int_per_rank[ rank ] += 1;
+    }
+
+    kernel().mpi_manager.set_recv_counts_secondary_events_in_int_per_rank(
+      recv_counts_secondary_events_in_int_per_rank );
     delete unique_secondary_source_gid_syn_id;
   } // of omp single
 }
@@ -407,22 +408,19 @@ nest::SourceTable::get_next_target_data( const thread tid,
       {
         next_target_data.set_is_primary( false );
 
-        const size_t recv_buffer_pos =
+        // compute the buffer position relative to the first position
+        // the source rank will write to from the absolute position in
+        // the receive buffer
+        const size_t relative_recv_buffer_pos =
           kernel().connection_manager.get_secondary_recv_buffer_position(
             current_position.tid,
             current_position.syn_id,
-            current_position.lcid );
-
-        // convert receive buffer position to send buffer position
-        // according to buffer layout of MPIAlltoall
-        const size_t send_buffer_pos =
-          kernel()
-            .mpi_manager.recv_buffer_pos_to_send_buffer_pos_secondary_events(
-              recv_buffer_pos, source_rank );
+            current_position.lcid )
+          - kernel().mpi_manager.get_recv_displacement_secondary_events_in_int( source_rank );
 
         SecondaryTargetDataFields& secondary_fields =
           next_target_data.secondary_data;
-        secondary_fields.set_send_buffer_pos( send_buffer_pos );
+        secondary_fields.set_recv_buffer_pos( relative_recv_buffer_pos );
         secondary_fields.set_syn_id( current_position.syn_id );
       }
       --current_position.lcid;

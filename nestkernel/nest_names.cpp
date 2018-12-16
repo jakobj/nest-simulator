@@ -63,7 +63,8 @@ const Name b( "b" );
 const Name beta( "beta" );
 const Name beta_Ca( "beta_Ca" );
 const Name binary( "binary" );
-const Name buffer_size_secondary_events( "buffer_size_secondary_events" );
+const Name send_buffer_size_secondary_events( "send_buffer_size_secondary_events" );
+const Name recv_buffer_size_secondary_events( "recv_buffer_size_secondary_events" );
 const Name buffer_size_spike_data( "buffer_size_spike_data" );
 const Name buffer_size_target_data( "buffer_size_target_data" );
 
