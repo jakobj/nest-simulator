@@ -71,7 +71,7 @@ public:
     {
       local_expr = SymEngine::subs( local_expr, { { symbols_[ i ], SymEngine::real_double( args [ i ] ) } } );
     }
-    return SymEngine::eval_double( *local_expr );
+    return std::real(SymEngine::eval_complex_double( *local_expr ));
   }
 };
 
@@ -219,7 +219,7 @@ private:
     // double norm_w = ( w / Wmax_ )
     //   + ( lambda_ * std::pow( 1.0 - ( w / Wmax_ ), mu_plus_ ) * kplus );
     // weight_ += lambda_ * Wmax_ * expr_facilitate_.eval( { weight_ / Wmax_, Kplus_ * std::exp( minus_dt / tau_plus_ ) } );
-    double delta_w = expr_facilitate_.eval( { weight_ / Wmax_, kplus } );
+    double delta_w = expr_facilitate_.eval( { w / Wmax_, kplus } );
     double norm_w = ( w / Wmax_ ) + lambda_ * delta_w;
     return norm_w < 1.0 ? norm_w * Wmax_ : Wmax_;
   }
@@ -229,7 +229,7 @@ private:
   {
     // double norm_w = ( w / Wmax_ )
     //   - ( alpha_ * lambda_ * std::pow( w / Wmax_, mu_minus_ ) * kminus );
-    double delta_w = expr_depress_.eval( { weight_ / Wmax_, kminus } );
+    double delta_w = expr_depress_.eval( { w / Wmax_, kminus } );
     double norm_w = ( w / Wmax_ ) - alpha_ * lambda_ * delta_w;
     return norm_w > 0.0 ? norm_w * Wmax_ : 0.0;
   }
