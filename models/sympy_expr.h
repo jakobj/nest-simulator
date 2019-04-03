@@ -1,3 +1,6 @@
+#ifndef SYMPY_EXPR_H
+#define SYMPY_EXPR_H
+
 // Includes from SymEngine
 #include "symengine/eval_double.h"
 #include "symengine/real_double.h"
@@ -37,3 +40,5 @@ class SympyExpr
 };
 
 } // namespace nest
+
+#endif
