@@ -297,13 +297,13 @@ STDPSympyConnection< targetidentifierT >::STDPSympyConnection()
   , mu_minus_( 1.0 )
   , Wmax_( 100.0 )
   , Kplus_( 0.0 )
-  , expr_depress_( SympyExpr() )
-  , expr_facilitate_( SympyExpr() )
-  , str_expr_depress_( "" )
-  , str_expr_facilitate_( "" )
-  , n_inputs_( 0 )
+  , str_expr_depress_( "0." )
+  , str_expr_facilitate_( "0." )
+  , n_inputs_( 2 )
   , t_lastspike_( 0.0 )
 {
+  expr_depress_.parse( str_expr_depress_, n_inputs_ );
+  expr_facilitate_.parse( str_expr_facilitate_, n_inputs_ );
 }
 
 template < typename targetidentifierT >
@@ -359,12 +359,14 @@ STDPSympyConnection< targetidentifierT >::set_status( const DictionaryDatum& d,
   updateValue< double >( d, names::mu_plus, mu_plus_ );
   updateValue< double >( d, names::mu_minus, mu_minus_ );
   updateValue< double >( d, names::Wmax, Wmax_ );
-  updateValue< std::string >( d, "expr_depress", str_expr_depress_ );
-  updateValue< std::string >( d, "expr_facilitate", str_expr_facilitate_ );
-  updateValue< long >( d, "n_inputs", n_inputs_ );
-
-  expr_depress_.parse( str_expr_depress_, n_inputs_ );
-  expr_facilitate_.parse( str_expr_facilitate_, n_inputs_ );
+  if ( updateValue< std::string >( d, "expr_depress", str_expr_depress_ ) )
+  {
+    expr_depress_.parse( str_expr_depress_, n_inputs_ );
+  }
+  if ( updateValue< std::string >( d, "expr_facilitate", str_expr_facilitate_ ) )
+  {
+    expr_facilitate_.parse( str_expr_facilitate_, n_inputs_ );
+  }
 
   // check if weight_ and Wmax_ has the same sign
   if ( not( ( ( weight_ >= 0 ) - ( weight_ < 0 ) )

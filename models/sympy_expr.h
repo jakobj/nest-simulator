@@ -13,28 +13,33 @@ namespace nest
 
 class SympyExpr
 {
- private:
+private:
   SymEngine::RCP< const SymEngine::Basic > expr_;
   std::vector< SymEngine::RCP< const SymEngine::Basic > > symbols_;
 
- public:
+public:
   void parse( const std::string expr, const size_t n_inputs )
   {
+    assert( expr.size() > 0 );
+
     expr_ = SymEngine::parse( expr );
 
+    symbols_.resize( n_inputs );
     for ( size_t i = 0; i < n_inputs; ++i )
-      {
-        symbols_.push_back( SymEngine::symbol( "x_" + std::to_string( i ) ) );
-      }
+    {
+      symbols_[ i ] = SymEngine::symbol( "x_" + std::to_string( i ) );
+    }
   }
 
   double eval( const std::vector< double > args ) const
   {
+    assert( args.size() == symbols_.size() );
+
     SymEngine::RCP< const SymEngine::Basic > local_expr = expr_;
     for ( size_t i = 0; i < args.size(); ++i )
-      {
-        local_expr = SymEngine::subs( local_expr, { { symbols_[ i ], SymEngine::real_double( args [ i ] ) } } );
-      }
+    {
+      local_expr = SymEngine::subs( local_expr, { { symbols_[ i ], SymEngine::real_double( args [ i ] ) } } );
+    }
     return std::real( SymEngine::eval_complex_double( *local_expr ) );
   }
 };
