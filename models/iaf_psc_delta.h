@@ -149,6 +149,15 @@ public:
   void get_status( DictionaryDatum& ) const;
   void set_status( const DictionaryDatum& );
 
+  // Access functions for UniversalDataLogger -------------------------------
+
+  //! Read out the real membrane potential
+  double
+  get_V_m_() const
+  {
+    return S_.y3_ + P_.E_L_;
+  }
+
 private:
   void init_state_( const Node& proto );
   void init_buffers_();
@@ -267,15 +276,6 @@ private:
 
     int RefractoryCounts_;
   };
-
-  // Access functions for UniversalDataLogger -------------------------------
-
-  //! Read out the real membrane potential
-  double
-  get_V_m_() const
-  {
-    return S_.y3_ + P_.E_L_;
-  }
 
   // ----------------------------------------------------------------
 

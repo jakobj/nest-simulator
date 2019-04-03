@@ -128,6 +128,7 @@
 #include "quantal_stp_connection_impl.h"
 #include "rate_connection_instantaneous.h"
 #include "rate_connection_delayed.h"
+#include "reward_stdp_sympy_connection.h"
 #include "spike_dilutor.h"
 #include "static_connection.h"
 #include "static_connection_hom_w.h"
@@ -526,6 +527,11 @@ ModelsModule::init( SLIInterpreter* )
     .model_manager
     .register_connection_model< STDPSympyConnection< TargetIdentifierPtrRport > >(
       "stdp_sympy_synapse" );
+
+  kernel()
+    .model_manager
+    .register_connection_model< RewardSTDPSympyConnection< TargetIdentifierPtrRport > >(
+      "reward_stdp_sympy_synapse" );
 
   /** @BeginDocumentation
      Name: stdp_pl_synapse_hom_hpc - Variant of stdp_pl_synapse_hom with low
