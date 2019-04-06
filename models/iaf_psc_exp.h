@@ -95,8 +95,6 @@ V_th         double - Spike threshold in mV.
 V_reset      double - Reset membrane potential after a spike in mV.
 I_e          double - Constant input current in pA.
 t_spike      double - Point in time of last spike in ms.
-rho          double - Stochastic firing intensity at threshold in 1/s.
-delta        double - Width of threshold region in mV.
 
 Remarks:
 
@@ -159,16 +157,28 @@ public:
    */
   using Node::handle;
   using Node::handles_test_event;
+  using Node::sends_secondary_event;
 
   port send_test_event( Node&, rport, synindex, bool );
 
   void handle( SpikeEvent& );
   void handle( CurrentEvent& );
   void handle( DataLoggingRequest& );
+  void handle( TimeDrivenSpikeEvent& );
 
   port handles_test_event( SpikeEvent&, rport );
   port handles_test_event( CurrentEvent&, rport );
   port handles_test_event( DataLoggingRequest&, rport );
+  port handles_test_event( TimeDrivenSpikeEvent&, rport );
+
+  void
+  sends_secondary_event( TimeDrivenSpikeEvent& )
+  {
+    if ( not time_driven_ )
+    {
+      throw IllegalConnection( "Sending node is not in time-driven mode." );
+    }
+  }
 
   void get_status( DictionaryDatum& ) const;
   void set_status( const DictionaryDatum& );
@@ -179,6 +189,9 @@ private:
   void calibrate();
 
   void update( const Time&, const long, const long );
+
+  void reset_activity_();
+  void set_activity_( const long lag );
 
   // intensity function
   double phi_() const;
@@ -368,6 +381,9 @@ private:
 
   //! Mapping of recordables names to access functions
   static RecordablesMap< iaf_psc_exp > recordablesMap_;
+
+  std::vector< unsigned int > activity_;
+  bool time_driven_;
 };
 
 
@@ -379,7 +395,18 @@ nest::iaf_psc_exp::send_test_event( Node& target,
 {
   SpikeEvent e;
   e.set_sender( *this );
-  return target.handles_test_event( e, receptor_type );
+  const bool target_handles_spike_event = target.handles_test_event( e, receptor_type );
+
+  if ( time_driven_ )
+  {
+    TimeDrivenSpikeEvent tse;
+    tse.set_sender( *this );
+    return target_handles_spike_event or target.handles_test_event( tse, receptor_type );
+  }
+  else
+  {
+    return target_handles_spike_event;
+  }
 }
 
 inline port
@@ -419,6 +446,16 @@ iaf_psc_exp::handles_test_event( DataLoggingRequest& dlr, rport receptor_type )
   return B_.logger_.connect_logging_device( dlr, recordablesMap_ );
 }
 
+inline port
+iaf_psc_exp::handles_test_event( TimeDrivenSpikeEvent&, rport receptor_type )
+{
+  if ( receptor_type != 0 )
+  {
+    throw UnknownReceptorType( receptor_type, get_name() );
+  }
+  return 0;
+}
+
 inline void
 iaf_psc_exp::get_status( DictionaryDatum& d ) const
 {
@@ -427,6 +464,8 @@ iaf_psc_exp::get_status( DictionaryDatum& d ) const
   Archiving_Node::get_status( d );
 
   ( *d )[ names::recordables ] = recordablesMap_.get_list();
+
+  def< bool >( d, "time_driven", time_driven_ );
 }
 
 inline void
@@ -446,6 +485,21 @@ iaf_psc_exp::set_status( const DictionaryDatum& d )
   // if we get here, temporaries contain consistent set of properties
   P_ = ptmp;
   S_ = stmp;
+
+  updateValue< bool >( d, "time_driven", time_driven_ );
+}
+
+inline void
+iaf_psc_exp::reset_activity_()
+{
+  activity_.assign( activity_.size(), 0 );
+}
+
+inline void
+iaf_psc_exp::set_activity_( const long lag )
+{
+  assert( static_cast< size_t>( lag ) < activity_.size() );
+  activity_[ lag ] = 1;
 }
 
 inline double
