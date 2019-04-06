@@ -107,6 +107,7 @@
 #include "sinusoidal_poisson_generator.h"
 #include "spike_generator.h"
 #include "step_current_generator.h"
+#include "step_rate_generator.h"
 
 // Recording devices
 #include "correlation_detector.h"
@@ -121,6 +122,7 @@
 
 // Prototypes for synapses
 #include "bernoulli_connection.h"
+#include "clopath_connection.h"
 #include "common_synapse_properties.h"
 #include "cont_delay_connection.h"
 #include "cont_delay_connection_impl.h"
@@ -141,6 +143,8 @@
 #include "stdp_triplet_connection.h"
 #include "stdp_dopa_connection.h"
 #include "stdp_pl_connection_hom.h"
+#include "stdp_sympy_connection.h"
+#include "reward_stdp_sympy_connection.h"
 #include "tsodyks2_connection.h"
 #include "tsodyks_connection.h"
 #include "tsodyks_connection_hom.h"
