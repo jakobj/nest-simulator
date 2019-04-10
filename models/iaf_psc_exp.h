@@ -183,6 +183,9 @@ public:
   void get_status( DictionaryDatum& ) const;
   void set_status( const DictionaryDatum& );
 
+  unsigned int get_activity( const size_t lag ) const override;
+  double get_u( const size_t lag ) const override;
+
 private:
   void init_state_( const Node& proto );
   void init_buffers_();
@@ -191,7 +194,10 @@ private:
   void update( const Time&, const long, const long );
 
   void reset_activity_();
-  void set_activity_( const long lag );
+  void set_activity_( const size_t lag );
+
+  void reset_u_();
+  void set_u_( const size_t lag );
 
   // intensity function
   double phi_() const;
@@ -383,6 +389,7 @@ private:
   static RecordablesMap< iaf_psc_exp > recordablesMap_;
 
   std::vector< unsigned int > activity_;
+  std::vector< double > u_;
   bool time_driven_;
 };
 
@@ -496,10 +503,36 @@ iaf_psc_exp::reset_activity_()
 }
 
 inline void
-iaf_psc_exp::set_activity_( const long lag )
+iaf_psc_exp::set_activity_( const size_t lag )
 {
   assert( static_cast< size_t>( lag ) < activity_.size() );
   activity_[ lag ] = 1;
+}
+
+inline unsigned int
+iaf_psc_exp::get_activity( const size_t lag ) const
+{
+  return activity_[ lag ];
+}
+
+inline void
+iaf_psc_exp::reset_u_()
+{
+  u_.assign( u_.size(), 0. );
+}
+
+inline void
+iaf_psc_exp::set_u_( const size_t lag )
+{
+  assert( static_cast< size_t >( lag ) < u_.size() );
+  u_[ lag ] = P_.E_L_ + S_.V_m_;
+}
+
+inline double
+iaf_psc_exp::get_u( const size_t lag ) const
+{
+  assert( lag < u_.size() );
+  return u_[ lag ];
 }
 
 inline double

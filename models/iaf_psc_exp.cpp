@@ -219,6 +219,7 @@ nest::iaf_psc_exp::iaf_psc_exp()
   , S_()
   , B_( *this )
   , activity_( std::vector< unsigned int >( 0 ) )
+  , u_( std::vector< double >( 0.0 ) )
   , time_driven_( false )
 {
   recordablesMap_.create();
@@ -230,6 +231,7 @@ nest::iaf_psc_exp::iaf_psc_exp( const iaf_psc_exp& n )
   , S_( n.S_ )
   , B_( n.B_, *this )
   , activity_( n.activity_ )
+  , u_( n.u_ )
   , time_driven_( n.time_driven_ )
 {
 }
@@ -315,6 +317,8 @@ nest::iaf_psc_exp::calibrate()
     const size_t buffer_size = kernel().connection_manager.get_min_delay();
     activity_.resize( buffer_size );
     reset_activity_();
+    u_.resize( buffer_size );
+    reset_u_();
   }
 
   V_.rng_ = kernel().rng_manager.get_rng( get_thread() );
@@ -362,6 +366,11 @@ nest::iaf_psc_exp::update( const Time& origin, const long from, const long to )
 
     S_.i_syn_ex_ += V_.weighted_spikes_ex_;
     S_.i_syn_in_ += V_.weighted_spikes_in_;
+
+    if ( time_driven_ )
+    {
+      set_u_( lag );
+    }
 
     if ( ( P_.delta_ < 1e-10 and S_.V_m_ >= P_.Theta_ ) // deterministic threshold crossing
          or ( P_.delta_ > 1e-10 and V_.rng_->drand() < phi_() * h * 1e-3 ) ) // stochastic threshold crossing
