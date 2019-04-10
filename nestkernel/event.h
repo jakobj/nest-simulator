@@ -1283,7 +1283,7 @@ inline SpikeEvent::SpikeEvent( const TimeDrivenSpikeEvent& e, const size_t lag )
   set_stamp( e.get_stamp() + Time::step( lag ) );
   set_port( e.get_port() );
   set_weight( e.get_weight() );
-  set_delay( e.get_delay() );
+  set_delay_steps( e.get_delay_steps() );
   set_receiver( e.get_receiver() );
   set_rport( e.get_rport() );
 }

@@ -137,6 +137,7 @@
 #include "static_connection.h"
 #include "static_connection_hom_w.h"
 #include "time_driven_static_connection.h"
+#include "time_driven_usrl_connection.h"
 #include "stdp_connection.h"
 #include "stdp_connection_facetshw_hom.h"
 #include "stdp_connection_facetshw_hom_impl.h"
@@ -498,6 +499,13 @@ ModelsModule::init( SLIInterpreter* )
       /*requires_symmetric=*/false,
       /*supports_wfr=*/false );
 
+  kernel()
+    .model_manager
+    .register_secondary_connection_model< TimeDrivenUSRLConnection< TargetIdentifierPtrRport > >(
+      "time_driven_usrl_synapse",
+      /*has_delay=*/true,
+      /*requires_symmetric=*/false,
+      /*supports_wfr=*/false );
 
   /** @BeginDocumentation
      Name: gap_junction - Connection model for gap junctions.
