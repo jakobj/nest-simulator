@@ -511,34 +511,34 @@ ModelsModule::init( SLIInterpreter* )
      Name: gap_junction - Connection model for gap junctions.
      SeeAlso: synapsedict
   */
-  kernel()
-    .model_manager
-    .register_secondary_connection_model< GapJunction< TargetIdentifierPtrRport > >(
-      "gap_junction",
-      /*has_delay=*/false,
-      /*requires_symmetric=*/true,
-      /*supports_wfr=*/true );
-  kernel()
-    .model_manager
-    .register_secondary_connection_model< RateConnectionInstantaneous< TargetIdentifierPtrRport > >(
-      "rate_connection_instantaneous",
-      /*has_delay=*/false,
-      /*requires_symmetric=*/false,
-      /*supports_wfr=*/true );
-  kernel()
-    .model_manager
-    .register_secondary_connection_model< RateConnectionDelayed< TargetIdentifierPtrRport > >(
-      "rate_connection_delayed",
-      /*has_delay=*/true,
-      /*requires_symmetric=*/false,
-      /*supports_wfr=*/false );
-  kernel()
-    .model_manager
-    .register_secondary_connection_model< DiffusionConnection< TargetIdentifierPtrRport > >(
-      "diffusion_connection",
-      /*has_delay=*/false,
-      /*requires_symmetric=*/false,
-      /*supports_wfr=*/true );
+  // kernel()
+  //   .model_manager
+  //   .register_secondary_connection_model< GapJunction< TargetIdentifierPtrRport > >(
+  //     "gap_junction",
+  //     /*has_delay=*/false,
+  //     /*requires_symmetric=*/true,
+  //     /*supports_wfr=*/true );
+  // kernel()
+  //   .model_manager
+  //   .register_secondary_connection_model< RateConnectionInstantaneous< TargetIdentifierPtrRport > >(
+  //     "rate_connection_instantaneous",
+  //     /*has_delay=*/false,
+  //     /*requires_symmetric=*/false,
+  //     /*supports_wfr=*/true );
+  // kernel()
+  //   .model_manager
+  //   .register_secondary_connection_model< RateConnectionDelayed< TargetIdentifierPtrRport > >(
+  //     "rate_connection_delayed",
+  //     /*has_delay=*/true,
+  //     /*requires_symmetric=*/false,
+  //     /*supports_wfr=*/false );
+  // kernel()
+  //   .model_manager
+  //   .register_secondary_connection_model< DiffusionConnection< TargetIdentifierPtrRport > >(
+  //     "diffusion_connection",
+  //     /*has_delay=*/false,
+  //     /*requires_symmetric=*/false,
+  //     /*supports_wfr=*/true );
 
 
   /** @BeginDocumentation
@@ -565,26 +565,26 @@ ModelsModule::init( SLIInterpreter* )
     .register_connection_model< RewardSTDPSympyConnection< TargetIdentifierPtrRport > >(
       "reward_stdp_sympy_synapse" );
 
-  kernel()
-    .model_manager
-    .register_connection_model< ClopathConnection< TargetIdentifierPtrRport > >(
-      "clopath_synapse",
-      /*requires_symmetric=*/false,
-      /*requires_clopath_archiving=*/true );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< ClopathConnection< TargetIdentifierPtrRport > >(
+  //     "clopath_synapse",
+  //     /*requires_symmetric=*/false,
+  //     /*requires_clopath_archiving=*/true );
 
   /** @BeginDocumentation
      Name: stdp_pl_synapse_hom_hpc - Variant of stdp_pl_synapse_hom with low
      memory consumption.
      SeeAlso: synapsedict, stdp_pl_synapse_hom, static_synapse_hpc
   */
-  kernel()
-    .model_manager
-    .register_connection_model< STDPPLConnectionHom< TargetIdentifierPtrRport > >(
-      "stdp_pl_synapse_hom" );
-  kernel()
-    .model_manager
-    .register_connection_model< STDPPLConnectionHom< TargetIdentifierIndex > >(
-      "stdp_pl_synapse_hom_hpc" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< STDPPLConnectionHom< TargetIdentifierPtrRport > >(
+  //     "stdp_pl_synapse_hom" );
+  // kernel()
+  //   .model_manager
+  //   .register_connection_model< STDPPLConnectionHom< TargetIdentifierIndex > >(
+  //     "stdp_pl_synapse_hom_hpc" );
 
 
   /** @BeginDocumentation
