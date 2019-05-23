@@ -185,6 +185,7 @@ public:
 
   unsigned int get_activity( const size_t lag ) const override;
   double get_u( const size_t lag ) const override;
+  double get_u_target( const size_t lag ) const override;
 
 private:
   void init_state_( const Node& proto );
@@ -390,6 +391,7 @@ private:
 
   std::vector< unsigned int > activity_;
   std::vector< double > u_;
+  double u_target_;
   bool time_driven_;
 };
 
@@ -473,6 +475,7 @@ iaf_psc_exp::get_status( DictionaryDatum& d ) const
   ( *d )[ names::recordables ] = recordablesMap_.get_list();
 
   def< bool >( d, "time_driven", time_driven_ );
+  def< double >( d, "u_target", u_target_ );
 }
 
 inline void
@@ -494,6 +497,7 @@ iaf_psc_exp::set_status( const DictionaryDatum& d )
   S_ = stmp;
 
   updateValue< bool >( d, "time_driven", time_driven_ );
+  updateValue< double >( d, "u_target", u_target_ );
 }
 
 inline void
@@ -533,6 +537,13 @@ iaf_psc_exp::get_u( const size_t lag ) const
 {
   assert( lag < u_.size() );
   return u_[ lag ];
+}
+
+inline double
+iaf_psc_exp::get_u_target( const size_t ) const
+{
+  // assert( lag < u_.size() );
+  return u_target_;
 }
 
 inline double
