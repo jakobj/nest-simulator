@@ -71,8 +71,8 @@ public:
   TimeDrivenUSConnection()
     : ConnectionBase()
     , weight_( 1.0 )
-    // , E_( 0. )
-    // , tau_M_( 500. )
+    , I_( 0. )
+    , tau_I_( 500. )
     , tau_( 2.0 )
     , Tau_( 10.0 )
     , C_( 250.0 )
@@ -161,12 +161,15 @@ public:
 
         const double h = Time::get_resolution().get_ms();
 
-        // update elgibility trace
-        // E_ = E_ * PE_ + (1. - PE_ ) * 1. / delta_ * PSP_ * ( s - phi_( u ) * h ) * 1e9;  // TODO where does the factor 1e9 come from?
-
         // compute weight update
-        const double delta_w = (u_trg - u) * PSP_ * h;
-        weight_ += eta_ * delta_w;
+        const double delta_w = (u_trg - u) * PSP_;
+
+        // update plasticity induction variable
+        I_ = I_ * PI_ + (1. - PI_ ) * delta_w;
+
+        // perform weight update
+        weight_ += eta_ * I_ * h;
+
 
         ++lag;
       }
@@ -188,11 +191,11 @@ public:
 
 private:
   double weight_; //!< connection weight
-  // double E_; //!< eligibility trace
-  // double tau_M_; //!< time constant of eligibility trace
+  double I_; //!< plasticity induction variable (low-pass filter of weight updates)
+  double tau_I_; //!< time constant of plasticity induction variable
 
-  // propagator for eligibility trace
-  // double PE_;
+  // propagator for plasticity induction variable
+  double PI_;
 
   // parameters of postsynaptic neuron
   double tau_;
@@ -230,8 +233,9 @@ TimeDrivenUSConnection< targetidentifierT >::get_status(
   ConnectionBase::get_status( d );
   def< double >( d, names::weight, weight_ );
   def< long >( d, names::size_of, sizeof( *this ) );
-  // def< double >( d, "E", E_ );
+  def< double >( d, "I", I_ );
   def< double >( d, "PSP", PSP_ );
+  def< double >( d, "tau_I", tau_I_ );
   def< double >( d, "eta", eta_ );
 }
 
@@ -243,9 +247,7 @@ TimeDrivenUSConnection< targetidentifierT >::set_status(
 {
   ConnectionBase::set_status( d, cm );
   updateValue< double >( d, names::weight, weight_ );
-  // updateValue< double >( d, "E", E_ );
-  // updateValue< double >( d, "PSP", PSP_ );
-  // updateValue< double >( d, "i_syn", i_syn_ );
+  updateValue< double >( d, "tau_I", tau_I_ );
   updateValue< double >( d, "eta", eta_ );
 }
 
@@ -265,7 +267,7 @@ TimeDrivenUSConnection< targetidentifierT >::init_propagators()
   P22_ = std::exp( -h / Tau_ );
   P21_ = propagator_32( tau_, Tau_, C_, h );
 
-  // PE_ = std::exp( -h / tau_M_ );
+  PI_ = std::exp( -h / tau_I_ );
 }
 
 template < typename targetidentifierT >
