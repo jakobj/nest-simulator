@@ -51,6 +51,9 @@ nest::Archiving_Node::Archiving_Node()
   , max_delay_( -1.0 )
   , trace_( 0. )
   , last_spike_( -1.0 )
+  , rate_( 0.0 )
+  , rate_hist_( std::vector< double >( 0 ) )
+  , trace_delay_steps_( 1 )
   , Ca_t_( 0.0 )
   , Ca_minus_( 0.0 )
   , tau_Ca_( 10000.0 )
@@ -71,6 +74,9 @@ nest::Archiving_Node::Archiving_Node( const Archiving_Node& n )
   , max_delay_( n.max_delay_ )
   , trace_( n.trace_ )
   , last_spike_( n.last_spike_ )
+  , rate_( n.rate_ )
+  , rate_hist_( n.rate_hist_ )
+  , trace_delay_steps_( n.trace_delay_steps_ )
   , Ca_t_( n.Ca_t_ )
   , Ca_minus_( n.Ca_minus_ )
   , tau_Ca_( n.tau_Ca_ )
@@ -195,6 +201,35 @@ nest::Archiving_Node::get_history( double t1,
 }
 
 void
+nest::Archiving_Node::set_rate( const double rate )
+{
+  rate_ = rate;
+  append_rate_hist( rate );
+}
+
+double 
+nest::Archiving_Node::get_rate()
+{
+  return rate_;
+}
+
+void
+nest::Archiving_Node::append_rate_hist(const double rate)
+{
+  rate_hist_.push_back( rate );
+  if ( rate_hist_.size() > trace_delay_steps_ )
+  {
+    rate_hist_.erase( rate_hist_.begin(), rate_hist_.begin() + 1 );
+  }
+}
+
+const std::vector<double>&
+nest::Archiving_Node::get_rate_hist() const
+{
+    return rate_hist_;
+}
+
+void
 nest::Archiving_Node::set_spiketime( Time const& t_sp, double offset )
 {
   const double t_sp_ms = t_sp.get_ms() - offset;
@@ -251,6 +286,7 @@ nest::Archiving_Node::get_status( DictionaryDatum& d ) const
   def< double >( d, names::beta_Ca, beta_Ca_ );
   def< double >( d, names::tau_minus_triplet, tau_minus_triplet_ );
   def< double >( d, names::post_trace, trace_ );
+  def< long >( d, "trace_delay_steps", trace_delay_steps_ );
 #ifdef DEBUG_ARCHIVER
   def< int >( d, names::archiver_length, history_.size() );
 #endif
@@ -281,6 +317,7 @@ nest::Archiving_Node::set_status( const DictionaryDatum& d )
   updateValue< double >( d, names::tau_minus_triplet, new_tau_minus_triplet );
   updateValue< double >( d, names::tau_Ca, new_tau_Ca );
   updateValue< double >( d, names::beta_Ca, new_beta_Ca );
+  updateValue< long >( d, "trace_delay_steps", trace_delay_steps_ );
 
   if ( new_tau_minus <= 0.0 or new_tau_minus_triplet <= 0.0 )
   {

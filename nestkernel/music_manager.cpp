@@ -108,6 +108,10 @@ MUSICManager::enter_runtime( double h_min_delay )
   {
     music_runtime = new MUSIC::Runtime( music_setup, h_min_delay * 1e-3 );
   }
+
+  msg =
+    String::compose( "Finish entering MUSIC runtime with tick = %1 ms", h_min_delay );
+  LOG( M_INFO, "MUSICManager::enter_runtime", msg );
 #endif
 }
 
@@ -219,6 +223,23 @@ MUSICManager::register_music_event_in_proxy( std::string portname,
 }
 
 void
+MUSICManager::register_music_rate_in_proxy( std::string portname,
+  int channel,
+  nest::Node* mp )
+{
+  std::map< std::string, MusicRateInHandler >::iterator it;
+  it = music_rate_in_portmap_.find( portname );
+  if ( it == music_rate_in_portmap_.end() )
+    {
+      MusicRateInHandler tmp( portname );
+      tmp.register_channel( channel, mp );
+      music_rate_in_portmap_[ portname ] = tmp;
+    }
+  else
+    it->second.register_channel( channel, mp );
+}
+
+void
 MUSICManager::set_music_in_port_acceptable_latency( std::string portname,
   double latency )
 {
@@ -258,6 +279,12 @@ MUSICManager::publish_music_in_ports_()
   {
     it->second.publish_port();
   }
+
+  std::map< std::string, MusicRateInHandler >::iterator it_rate;
+  for ( it_rate = music_rate_in_portmap_.begin(); it_rate != music_rate_in_portmap_.end(); ++it_rate )
+  {
+    it_rate->second.publish_port();
+  }
 }
 
 void
@@ -269,6 +296,12 @@ MUSICManager::update_music_event_handlers( Time const& origin,
   for ( it = music_in_portmap_.begin(); it != music_in_portmap_.end(); ++it )
   {
     it->second.update( origin, from, to );
+  }
+
+  std::map< std::string, MusicRateInHandler >::iterator it_rate;
+  for ( it_rate = music_rate_in_portmap_.begin(); it_rate != music_rate_in_portmap_.end(); ++it_rate )
+  {
+    it_rate->second.update( origin, from, to );
   }
 }
 #endif

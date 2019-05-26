@@ -48,6 +48,7 @@ set( models_sources
     gif_cond_exp_multisynapse.h gif_cond_exp_multisynapse.cpp
     gif_pop_psc_exp.h gif_pop_psc_exp.cpp
     ginzburg_neuron.h ginzburg_neuron.cpp
+    hebbian_rate_connection.h
     hh_cond_exp_traub.h hh_cond_exp_traub.cpp
     hh_cond_beta_gap_traub.h hh_cond_beta_gap_traub.cpp
     hh_psc_alpha.h hh_psc_alpha.cpp
@@ -79,6 +80,8 @@ set( models_sources
     music_cont_out_proxy.h music_cont_out_proxy.cpp
     music_event_in_proxy.h music_event_in_proxy.cpp
     music_event_out_proxy.h music_event_out_proxy.cpp
+    music_rate_in_proxy.h music_rate_in_proxy.cpp
+    music_rate_out_proxy.h music_rate_out_proxy.cpp
     music_message_in_proxy.h music_message_in_proxy.cpp
     noise_generator.h noise_generator.cpp
     parrot_neuron.h parrot_neuron.cpp
@@ -94,6 +97,7 @@ set( models_sources
     rate_neuron_opn.h rate_neuron_opn_impl.h
     rate_neuron_ipn.h rate_neuron_ipn_impl.h
     rate_transformer_node.h rate_transformer_node_impl.h
+    rate_volume_transmitter.h rate_volume_transmitter.cpp
     siegert_neuron.h siegert_neuron.cpp
     sigmoid_rate.h sigmoid_rate.cpp
     sigmoid_rate_gg_1998.h sigmoid_rate_gg_1998.cpp

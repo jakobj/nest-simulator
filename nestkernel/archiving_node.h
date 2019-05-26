@@ -162,6 +162,12 @@ public:
     std::deque< histentry >::iterator* start,
     std::deque< histentry >::iterator* finish );
 
+  double get_rate();
+  void set_rate(double);
+
+  const std::vector<double>& get_rate_hist() const;
+  void append_rate_hist( const double rate );
+
   /**
    * Register a new incoming STDP connection.
    *
@@ -224,6 +230,10 @@ private:
 
   // spiking history needed by stdp synapses
   std::deque< histentry > history_;
+  
+  double rate_;
+  std::vector<double> rate_hist_;
+  unsigned int trace_delay_steps_;
 
   /*
    * Structural plasticity

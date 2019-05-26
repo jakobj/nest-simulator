@@ -39,6 +39,7 @@
 
 #ifdef HAVE_MUSIC
 #include "music_event_handler.h"
+#include "music_rate_in_handler.h"
 #endif
 
 /*
@@ -139,6 +140,16 @@ public:
     nest::Node* mp );
 
   /**
+   * Register a node (of type music_input_proxy) with a given MUSIC
+   * port (portname) and a specific channel. The proxy will be
+   * notified, if a MUSIC event is being received on the respective
+   * channel and port.
+   */
+  void register_music_rate_in_proxy( std::string portname,
+    int channel,
+    nest::Node* mp );
+
+  /**
    * Set the acceptable latency (latency) for a music input port (portname).
    */
   void set_music_in_port_acceptable_latency( std::string portname,
@@ -187,6 +198,7 @@ public:
    * and the corresponding MUSIC event handler.
    */
   std::map< std::string, MusicEventHandler > music_in_portmap_;
+  std::map< std::string, MusicRateInHandler > music_rate_in_portmap_;
 
   /**
    * Publish all MUSIC input ports that were registered using

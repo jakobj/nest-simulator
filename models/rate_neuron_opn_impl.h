@@ -378,6 +378,9 @@ nest::rate_neuron_opn< TNonlinearities >::update_( Time const& origin,
     }
   }
 
+  // set last rate in archiving node for plasticity
+  set_rate(S_.rate_);
+
   // Send rate-neuron-event
   InstantaneousRateConnectionEvent rve;
   rve.set_coeffarray( new_rates );

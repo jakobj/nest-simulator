@@ -119,6 +119,7 @@
 #include "weight_recorder.h"
 
 #include "volume_transmitter.h"
+#include "rate_volume_transmitter.h"
 
 // Prototypes for synapses
 #include "bernoulli_connection.h"
@@ -133,6 +134,7 @@
 #include "quantal_stp_connection_impl.h"
 #include "rate_connection_instantaneous.h"
 #include "rate_connection_delayed.h"
+#include "hebbian_rate_connection.h"
 #include "spike_dilutor.h"
 #include "static_connection.h"
 #include "static_connection_hom_w.h"
@@ -162,6 +164,8 @@
 #include "music_event_out_proxy.h"
 #include "music_cont_in_proxy.h"
 #include "music_cont_out_proxy.h"
+#include "music_rate_in_proxy.h"
+#include "music_rate_out_proxy.h"
 #include "music_message_in_proxy.h"
 #endif
 
@@ -303,6 +307,10 @@ ModelsModule::init( SLIInterpreter* )
     "correlospinmatrix_detector" );
   kernel().model_manager.register_node_model< volume_transmitter >(
     "volume_transmitter" );
+  kernel().model_manager.register_node_model< rate_volume_transmitter_ipn >(
+    "rate_volume_transmitter_ipn" );
+  kernel().model_manager.register_node_model< rate_volume_transmitter_opn >(
+    "rate_volume_transmitter_opn" );
 
   // Create voltmeter as a multimeter pre-configured to record V_m.
   /** @BeginDocumentation
@@ -444,6 +452,10 @@ ModelsModule::init( SLIInterpreter* )
     "music_cont_in_proxy" );
   kernel().model_manager.register_node_model< music_cont_out_proxy >(
     "music_cont_out_proxy" );
+  kernel().model_manager.register_node_model< music_rate_in_proxy >(
+    "music_rate_in_proxy" );
+  kernel().model_manager.register_node_model< music_rate_out_proxy >(
+    "music_rate_out_proxy" );
   kernel().model_manager.register_node_model< music_message_in_proxy >(
     "music_message_in_proxy" );
 #endif
@@ -518,6 +530,13 @@ ModelsModule::init( SLIInterpreter* )
       /*has_delay=*/false,
       /*requires_symmetric=*/false,
       /*supports_wfr=*/true );
+  kernel()
+    .model_manager
+    .register_secondary_connection_model< HebbianRateConnection< TargetIdentifierPtrRport > >(
+      "hebbian_rate_connection",
+     /*has_delay=*/true,
+     /*requires_symmetric=*/false,
+     /*supports_wfr=*/true );
 
 
   /** @BeginDocumentation
