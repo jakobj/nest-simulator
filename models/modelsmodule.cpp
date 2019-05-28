@@ -137,6 +137,7 @@
 #include "static_connection.h"
 #include "static_connection_hom_w.h"
 #include "time_driven_static_connection.h"
+#include "time_driven_sympy_connection.h"
 #include "time_driven_us_connection.h"
 #include "time_driven_usrl_connection.h"
 #include "stdp_connection.h"
@@ -496,6 +497,14 @@ ModelsModule::init( SLIInterpreter* )
     .model_manager
     .register_secondary_connection_model< TimeDrivenStaticConnection< TargetIdentifierPtrRport > >(
       "time_driven_static_synapse",
+      /*has_delay=*/true,
+      /*requires_symmetric=*/false,
+      /*supports_wfr=*/false );
+
+  kernel()
+    .model_manager
+    .register_secondary_connection_model< TimeDrivenSympyConnection< TargetIdentifierPtrRport > >(
+      "time_driven_sympy_synapse",
       /*has_delay=*/true,
       /*requires_symmetric=*/false,
       /*supports_wfr=*/false );
