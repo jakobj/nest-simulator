@@ -249,6 +249,8 @@ private:
     /** Width of threshold region in mV. **/
     double delta_;
 
+    bool do_reset_after_spike_;
+
     Parameters_(); //!< Sets default parameter values
 
     void get( DictionaryDatum& ) const; //!< Store current values in dictionary

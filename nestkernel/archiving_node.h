@@ -180,6 +180,7 @@ public:
 
   virtual unsigned int get_activity( const size_t lag ) const { assert( false ); };
   virtual double get_u( const size_t lag ) const { assert( false ); };
+  virtual double get_u_target( const size_t lag ) const { assert( false ); };
 
 protected:
   /**

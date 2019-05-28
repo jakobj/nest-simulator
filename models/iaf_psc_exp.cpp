@@ -110,6 +110,7 @@ nest::iaf_psc_exp::Parameters_::get( DictionaryDatum& d ) const
   def< double >( d, names::t_ref, t_ref_ );
   def< double >( d, names::rho, rho_ );
   def< double >( d, names::delta, delta_ );
+  def< bool >( d, "reset_after_spike", do_reset_after_spike_ );
 }
 
 double
@@ -174,6 +175,8 @@ nest::iaf_psc_exp::Parameters_::set( const DictionaryDatum& d )
   {
     throw BadProperty( "Width of threshold region must not be negative." );
   }
+
+  updateValue< bool >( d, "reset_after_spike", do_reset_after_spike_ );
 
   return delta_EL;
 }
@@ -375,8 +378,11 @@ nest::iaf_psc_exp::update( const Time& origin, const long from, const long to )
     if ( ( P_.delta_ < 1e-10 and S_.V_m_ >= P_.Theta_ ) // deterministic threshold crossing
          or ( P_.delta_ > 1e-10 and V_.rng_->drand() < phi_() * h * 1e-3 ) ) // stochastic threshold crossing
     {
-      S_.r_ref_ = V_.RefractoryCounts_;
-      S_.V_m_ = P_.V_reset_;
+      if ( P_.do_reset_after_spike_ )
+      {
+        S_.r_ref_ = V_.RefractoryCounts_;
+        S_.V_m_ = P_.V_reset_;
+      }
 
       set_spiketime( Time::step( origin.get_steps() + lag + 1 ) );
 

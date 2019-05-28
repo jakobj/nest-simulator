@@ -163,13 +163,13 @@ public:
 
         // compute weight update
         const double delta_w = (u_trg - u) * PSP_;
+        // const double delta_w = ( phi_( u_trg ) * h * 1e-3 - s ) * PSP_;
 
         // update plasticity induction variable
         I_ = I_ * PI_ + (1. - PI_ ) * delta_w;
 
         // perform weight update
         weight_ += eta_ * I_ * h;
-
 
         ++lag;
       }
@@ -237,6 +237,8 @@ TimeDrivenUSConnection< targetidentifierT >::get_status(
   def< double >( d, "PSP", PSP_ );
   def< double >( d, "tau_I", tau_I_ );
   def< double >( d, "eta", eta_ );
+  def< double >( d, "delta", delta_ );
+  def< double >( d, "rho", rho_ );
 }
 
 template < typename targetidentifierT >
@@ -249,6 +251,8 @@ TimeDrivenUSConnection< targetidentifierT >::set_status(
   updateValue< double >( d, names::weight, weight_ );
   updateValue< double >( d, "tau_I", tau_I_ );
   updateValue< double >( d, "eta", eta_ );
+  updateValue< double >( d, "delta", delta_ );
+  updateValue< double >( d, "rho", rho_ );
 }
 
 template < typename targetidentifierT >
@@ -274,6 +278,7 @@ template < typename targetidentifierT >
 inline double
 TimeDrivenUSConnection< targetidentifierT >::phi_( const double u ) const
 {
+  assert( delta_ > 0. );
   return rho_ * std::exp( 1 / delta_ * ( u - Theta_ ) );
 }
 
