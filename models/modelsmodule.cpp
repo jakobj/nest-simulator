@@ -135,6 +135,7 @@
 #include "rate_connection_delayed.h"
 #include "spike_dilutor.h"
 #include "static_connection.h"
+#include "eprop_connection.h"
 #include "static_connection_hom_w.h"
 #include "stdp_connection.h"
 #include "stdp_connection_facetshw_hom.h"
@@ -466,6 +467,10 @@ ModelsModule::init( SLIInterpreter* )
     .model_manager
     .register_connection_model< StaticConnection< TargetIdentifierPtrRport > >(
       "static_synapse" );
+  kernel()
+    .model_manager
+    .register_connection_model< EPropConnection< TargetIdentifierPtrRport > >(
+      "eprop_synapse" );
   kernel()
     .model_manager
     .register_connection_model< StaticConnection< TargetIdentifierIndex > >(

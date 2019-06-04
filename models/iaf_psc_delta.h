@@ -149,6 +149,8 @@ public:
   void get_status( DictionaryDatum& ) const;
   void set_status( const DictionaryDatum& );
 
+  double get_pseudo_derivative( const Time time_last_spike, const long delay ) const override;
+
 private:
   void init_state_( const Node& proto );
   void init_buffers_();
@@ -195,6 +197,8 @@ private:
 
     bool with_refr_input_; //!< spikes arriving during refractory period are
                            //!< counted
+
+    double gamma_;
 
     Parameters_(); //!< Sets default parameter values
 
@@ -294,6 +298,8 @@ private:
 
   //! Mapping of recordables names to access functions
   static RecordablesMap< iaf_psc_delta > recordablesMap_;
+
+  std::vector< double > history_pseudo_derivative_;
 };
 
 
@@ -365,6 +371,12 @@ iaf_psc_delta::set_status( const DictionaryDatum& d )
   // if we get here, temporaries contain consistent set of properties
   P_ = ptmp;
   S_ = stmp;
+}
+
+inline double
+iaf_psc_delta::get_pseudo_derivative( const Time time_last_spike, const long delay ) const
+{
+  return history_pseudo_derivative_[ time_last_spike.get_steps() + delay ];
 }
 
 } // namespace

@@ -103,6 +103,7 @@ set( models_sources
     spike_generator.h spike_generator.cpp
     spin_detector.h spin_detector.cpp
     static_connection.h
+    eprop_connection.h
     static_connection_hom_w.h
     stdp_connection.h
     stdp_connection_facetshw_hom.h stdp_connection_facetshw_hom_impl.h

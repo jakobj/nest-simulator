@@ -74,6 +74,7 @@ nest::iaf_psc_delta::Parameters_::Parameters_()
   , V_min_( -std::numeric_limits< double >::max() ) // relative E_L_-55.0-E_L_
   , V_reset_( -70.0 - E_L_ )                        // mV, rel to E_L_
   , with_refr_input_( false )
+  , gamma_( 0.3 )
 {
 }
 
@@ -321,6 +322,8 @@ nest::iaf_psc_delta::update( Time const& origin,
 
       --S_.r_;
     }
+
+    history_pseudo_derivative_.push_back( P_.gamma_ * std::max( 0.0, 1. - std::abs( ( S_.y3_ - P_.V_th_ ) / P_.V_th_ ) ) );
 
     // threshold crossing
     if ( S_.y3_ >= P_.V_th_ )

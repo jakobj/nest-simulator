@@ -179,6 +179,8 @@ public:
    */
   double get_tau_Ca() const;
 
+  virtual double get_pseudo_derivative( const Time time_last_spike, const long delay ) const { assert( false ); };
+
 protected:
   /**
    * \fn void set_spiketime(Time const & t_sp, double offset)
