@@ -200,6 +200,8 @@ private:
 
     double gamma_;
 
+    bool fixed_pseudo_derivative_;
+
     Parameters_(); //!< Sets default parameter values
 
     void get( DictionaryDatum& ) const; //!< Store current values in dictionary

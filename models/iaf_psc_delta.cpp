@@ -75,6 +75,7 @@ nest::iaf_psc_delta::Parameters_::Parameters_()
   , V_reset_( -70.0 - E_L_ )                        // mV, rel to E_L_
   , with_refr_input_( false )
   , gamma_( 0.3 )
+  , fixed_pseudo_derivative_( false )
 {
 }
 
@@ -162,6 +163,7 @@ nest::iaf_psc_delta::Parameters_::set( const DictionaryDatum& d )
   }
 
   updateValue< bool >( d, names::refractory_input, with_refr_input_ );
+  updateValue< bool >( d, "fixed_pseudo_derivative", fixed_pseudo_derivative_ );
 
   return delta_EL;
 }
@@ -207,6 +209,7 @@ nest::iaf_psc_delta::iaf_psc_delta()
   , P_()
   , S_()
   , B_( *this )
+  , history_pseudo_derivative_( std::vector< double >( 0 ))
 {
   recordablesMap_.create();
 }
@@ -323,7 +326,14 @@ nest::iaf_psc_delta::update( Time const& origin,
       --S_.r_;
     }
 
-    history_pseudo_derivative_.push_back( P_.gamma_ * std::max( 0.0, 1. - std::abs( ( S_.y3_ - P_.V_th_ ) / P_.V_th_ ) ) );
+    if ( P_.fixed_pseudo_derivative_ )
+    {
+      history_pseudo_derivative_.push_back( 1.);
+    }
+    else
+    {
+      history_pseudo_derivative_.push_back( P_.gamma_ * std::max( 0.0, 1. - std::abs( ( S_.y3_ - P_.V_th_ ) / P_.V_th_ ) ) );
+    }
 
     // threshold crossing
     if ( S_.y3_ >= P_.V_th_ )
