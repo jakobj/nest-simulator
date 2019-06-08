@@ -967,8 +967,6 @@ private:
   static std::vector< synindex > supported_syn_ids_;
   static size_t coeff_length_; // length of coeffarray
 
-  typename std::vector< DataType >::iterator coeffarray_as_d_begin_;
-  typename std::vector< DataType >::iterator coeffarray_as_d_end_;
   std::vector< unsigned int >::iterator coeffarray_as_uints_begin_;
   std::vector< unsigned int >::iterator coeffarray_as_uints_end_;
 
@@ -1042,8 +1040,10 @@ public:
   void
   set_coeffarray( std::vector< DataType >& ca )
   {
-    coeffarray_as_d_begin_ = ca.begin();
-    coeffarray_as_d_end_ = ca.end();
+    typename std::vector< DataType >::iterator coeffarray_as_datatype_begin = ca.begin();
+    typename std::vector< DataType >::iterator coeffarray_as_datatype_end = ca.end();
+    coeffarray_as_uints_begin_ = *reinterpret_cast< std::vector< unsigned int >::iterator* >( &coeffarray_as_datatype_begin );
+    coeffarray_as_uints_end_ = *reinterpret_cast< std::vector< unsigned int >::iterator* >( &coeffarray_as_datatype_end );
     assert( coeff_length_ == ca.size() );
   }
 
@@ -1076,8 +1076,10 @@ public:
   std::vector< unsigned int >::iterator& operator>>(
     std::vector< unsigned int >::iterator& pos )
   {
-    for ( typename std::vector< DataType >::iterator i = coeffarray_as_d_begin_;
-          i != coeffarray_as_d_end_;
+    typename std::vector< DataType >::iterator coeffarray_as_datatype_begin = *reinterpret_cast< typename std::vector< DataType >::iterator* >( &coeffarray_as_uints_begin_ );
+    typename std::vector< DataType >::iterator coeffarray_as_datatype_end = *reinterpret_cast< typename std::vector< DataType >::iterator* >( &coeffarray_as_uints_end_ );
+    for ( typename std::vector< DataType >::iterator i = coeffarray_as_datatype_begin;
+          i != coeffarray_as_datatype_end;
           i++ )
     {
       // we need the static_cast here as the size of a stand-alone variable
