@@ -181,9 +181,7 @@ nest::music_rate_in_proxy::update( Time const& origin,
 void
 nest::music_rate_in_proxy::handle( InstantaneousRateConnectionEvent& e )
 {
-  e.set_sender( *this );
   kernel().event_delivery_manager.send_secondary( *this, e );
-
 }
 
 

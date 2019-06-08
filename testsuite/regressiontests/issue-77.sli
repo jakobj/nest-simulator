@@ -77,11 +77,15 @@ M_ERROR setverbosity
              /rate_transformer_gauss           % rate transformer
              /rate_transformer_sigmoid         % rate transformer
              /rate_transformer_sigmoid_gg_1998 % rate transformer
+             /rate_volume_transmitter_ipn % volume transmitter for rate connections
+             /rate_volume_transmitter_opn % volume transmitter for rate connections
              /music_event_out_proxy       % MUSIC port
              /music_event_in_proxy        % MUSIC port
              /music_message_in_proxy      % MUSIC port
              /music_cont_out_proxy        % MUSIC port
              /music_cont_in_proxy         % MUSIC port
+             /music_rate_out_proxy        % MUSIC port
+             /music_rate_in_proxy         % MUSIC port
            ] def    
 
 % The following models require connections to rport 1 or other specific parameters:
