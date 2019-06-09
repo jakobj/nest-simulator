@@ -67,12 +67,14 @@ nest::weight_recorder::weight_recorder( const weight_recorder& n )
 nest::weight_recorder::Parameters_::Parameters_()
   : senders_()
   , targets_()
+  , interval_(1)
 {
 }
 
 nest::weight_recorder::Parameters_::Parameters_( const Parameters_& p )
   : senders_( p.senders_ )
   , targets_( p.targets_ )
+  , interval_( p.interval_ )
 {
 }
 
@@ -81,6 +83,7 @@ nest::weight_recorder::Parameters_::get( DictionaryDatum& d ) const
 {
   ( *d )[ names::senders ] = senders_;
   ( *d )[ names::targets ] = targets_;
+  ( *d )[ names::interval ] = interval_;
 }
 
 void
@@ -97,6 +100,7 @@ nest::weight_recorder::Parameters_::set( const DictionaryDatum& d )
     targets_ = getValue< std::vector< long > >( d->lookup( names::targets ) );
     std::sort( targets_.begin(), targets_.end() );
   }
+  updateValue< long >( d, names::interval, interval_ );
 }
 
 void
@@ -203,7 +207,7 @@ nest::weight_recorder::handle( WeightRecorderEvent& e )
 {
   // accept spikes only if detector was active when spike was
   // emitted
-  if ( device_.is_active( e.get_stamp() ) )
+  if ( device_.is_active( e.get_stamp() ) and e.get_stamp().get_steps() % P_.interval_ == 0 )
   {
     // P_senders_ is defined and sender is not in it
     // or P_targets_ is defined and receiver is not in it

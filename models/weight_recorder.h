@@ -122,6 +122,7 @@ private:
   {
     std::vector< long > senders_;
     std::vector< long > targets_;
+    long interval_;
 
     Parameters_();
     Parameters_( const Parameters_& );
