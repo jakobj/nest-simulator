@@ -75,12 +75,16 @@ public:
     , weight_( 1.0 )
     , I_( 0. )
     , tau_I_( 500. )
+    , PI_( 0. )
     , tau_( 2.0 )
     , Tau_( 10.0 )
     , C_( 250.0 )
     , Theta_( -55. )
     , rho_( 0.01 )
     , delta_( 5. )
+    , P11_( 0. )
+    , P21_( 0. )
+    , P22_( 0. )
     , PSP_( 0. )
     , i_syn_( 0. )
     , initialized_( false )
@@ -142,43 +146,43 @@ public:
     std::vector< unsigned int >::iterator it = re.begin();
     // The call to get_coeffvalue( it ) in this loop also advances the iterator it
     while ( it != re.end() )
+    {
+
+      // propagate PSP
+      PSP_ = PSP_ * P22_ + i_syn_ * P21_;
+      i_syn_ *= P11_;
+      // weighted_spikes_ = spikes_.get_value( lag );
+      // i_syn_ += weighted_spikes_;
+      i_syn_ += spikes_.get_value( lag );
+
+      const unsigned int v = re.get_coeffvalue( it );
+      if ( v > 0 )
       {
-
-        // propagate PSP
-        PSP_ = PSP_ * P22_ + i_syn_ * P21_;
-        i_syn_ *= P11_;
-        // weighted_spikes_ = spikes_.get_value( lag );
-        // i_syn_ += weighted_spikes_;
-        i_syn_ += spikes_.get_value( lag );
-
-        const unsigned int v = re.get_coeffvalue( it );
-        if ( v > 0 )
-        {
-          spikes_.add_value( re.get_delay_steps() + lag, 1. );
-          SpikeEvent se( re, lag );
-          se();
-        }
-
-        const Archiving_Node* post_node = static_cast< Archiving_Node* >( &re.get_receiver() );
-        // const double s = post_node->get_activity( lag );
-        const double u = post_node->get_u( lag );
-        const double u_trg = post_node->get_u_target( lag );
-
-        const double h = Time::get_resolution().get_ms();
-
-        // compute weight update
-        // const double delta_w = (u_trg - u) * PSP_;
-        // const double delta_w = ( phi_( u_trg ) * h * 1e-3 - s ) * PSP_;
-        const double delta_w = expr_.eval( { u_trg, u, PSP_ } );
-
-        // update plasticity induction variable
-        I_ = I_ * PI_ + (1. - PI_ ) * delta_w;
-
-        // perform weight update
-        weight_ += eta_ * I_ * h;
-
-        ++lag;
+        spikes_.add_value( re.get_delay_steps() + lag, 1. );
+        SpikeEvent se( re, lag );
+        se();
       }
+
+      const Archiving_Node* post_node = static_cast< Archiving_Node* >( &re.get_receiver() );
+      // const double s = post_node->get_activity( lag );
+      const double u = post_node->get_u( lag );
+      const double u_trg = post_node->get_u_target( lag );
+
+      const double h = Time::get_resolution().get_ms();
+
+      // compute weight update
+      // const double delta_w = (u_trg - u) * PSP_;
+      // const double delta_w = ( phi_( u_trg ) * h * 1e-3 - s ) * PSP_;
+      const double delta_w = expr_.eval( { u_trg, u, PSP_ } );
+
+      // update plasticity induction variable
+      I_ = I_ * PI_ + (1. - PI_ ) * delta_w;
+
+      // perform weight update
+      weight_ += eta_ * I_ * h;
+
+      ++lag;
+    }
   }
 
   void get_status( DictionaryDatum& d ) const;
