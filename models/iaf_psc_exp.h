@@ -524,7 +524,7 @@ iaf_psc_exp::get_activity( const size_t lag ) const
 inline void
 iaf_psc_exp::reset_u_()
 {
-  u_.assign( u_.size(), 0. );
+  u_.assign( u_.size(), P_.E_L_ );
 }
 
 inline void
