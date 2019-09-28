@@ -147,6 +147,15 @@ nest::MPIManager::init_mpi( int* argc, char** argv[] )
   MPI_Type_commit( &MPI_OFFGRID_SPIKE );
 
   use_mpi_ = true;
+
+  rq_send = new MPI_Request[ get_num_processes() ];
+  rq_recv = new MPI_Request[ get_num_processes() ];
+
+  for ( size_t rank = 0; rank < get_num_processes(); ++rank )
+  {
+    rq_send[ rank ] = MPI_REQUEST_NULL;
+    rq_recv[ rank ] = MPI_REQUEST_NULL;
+  }
 }
 #endif /* #ifdef HAVE_MPI */
 
@@ -231,6 +240,9 @@ nest::MPIManager::mpi_finalize( int exitcode )
       mpi_abort( exitcode );
     }
   }
+
+  delete rq_send;
+  delete rq_recv;
 #endif /* #ifdef HAVE_MPI */
 }
 

@@ -327,6 +327,8 @@ EventDeliveryManager::gather_spike_data_( const thread tid,
 
 #pragma omp single
     {
+      kernel().mpi_manager.wait_for_send();
+
       if ( kernel().mpi_manager.adaptive_spike_buffers() and buffer_size_spike_data_has_changed_ )
       {
         resize_send_recv_buffers_spike_data_();
@@ -374,8 +376,10 @@ EventDeliveryManager::gather_spike_data_( const thread tid,
       }
       else
       {
-        kernel().mpi_manager.communicate_spike_data_Alltoall( send_buffer, recv_buffer );
+        kernel().mpi_manager.communicate_spike_data_IAlltoall( send_buffer, recv_buffer );
       }
+
+      kernel().mpi_manager.wait_for_recv();
     } // of omp single; implicit barrier
 
     // Deliver spikes from receive buffer to ring buffers.

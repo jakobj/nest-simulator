@@ -218,6 +218,10 @@ public:
   void communicate_off_grid_spike_data_Alltoall( std::vector< D >& send_buffer, std::vector< D >& recv_buffer );
   template < class D >
   void communicate_secondary_events_Alltoall( std::vector< D >& send_buffer, std::vector< D >& recv_buffer );
+  template < class D >
+  void communicate_spike_data_IAlltoall( std::vector< D >& send_buffer, std::vector< D >& recv_buffer );
+  void wait_for_recv();
+  void wait_for_send();
 
   void synchronize();
 
@@ -302,6 +306,9 @@ private:
 
   unsigned int send_recv_count_spike_data_per_rank_;
   unsigned int send_recv_count_target_data_per_rank_;
+
+  MPI_Request* rq_send;
+  MPI_Request* rq_recv;
 
 #ifdef HAVE_MPI
   //! array containing communication partner for each step.
@@ -784,6 +791,38 @@ MPIManager::communicate_off_grid_spike_data_Alltoall( std::vector< D >& send_buf
 
   communicate_Alltoall( send_buffer, recv_buffer, send_recv_count_off_grid_spike_data_in_int_per_rank );
 }
+
+template < class D >
+void
+MPIManager::communicate_spike_data_IAlltoall( std::vector< D >& send_buffer, std::vector< D >& recv_buffer )
+{
+  const size_t send_recv_count_spike_data_in_int_per_rank =
+    sizeof( SpikeData ) / sizeof( unsigned int ) * send_recv_count_spike_data_per_rank_;
+
+  const size_t this_rank = get_rank();
+  for ( size_t rank = 0; rank < get_num_processes(); ++rank )
+  {
+    void* recv_buffer_int = static_cast< void* >( &recv_buffer[ rank * send_recv_count_spike_data_per_rank_ ] );
+    MPI_Irecv( recv_buffer_int, send_recv_count_spike_data_in_int_per_rank, MPI_UNSIGNED, this_rank,
+               rank * 10000 + this_rank, comm, &( rq_recv[ rank ] ) );
+    void* send_buffer_int = static_cast< void* >( &send_buffer[ rank * send_recv_count_spike_data_per_rank_ ] );
+    MPI_Isend( send_buffer_int, send_recv_count_spike_data_in_int_per_rank, MPI_UNSIGNED, rank,
+               this_rank * 10000 + rank, comm, &( rq_send[ rank ] ) );
+  }
+}
+
+inline void
+MPIManager::wait_for_send()
+{
+  MPI_Waitall( get_num_processes(), rq_send, MPI_STATUSES_IGNORE );
+}
+
+inline void
+MPIManager::wait_for_recv()
+{
+  MPI_Waitall( get_num_processes(), rq_recv, MPI_STATUSES_IGNORE );
+}
+
 }
 
 #endif /* MPI_MANAGER_H */

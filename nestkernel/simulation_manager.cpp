@@ -956,6 +956,11 @@ nest::SimulationManager::update_()
     }
   } // of omp parallel
 
+  // last iteration in a simulation of loop in
+  // EventDeliveryManager::gather_spike_data_ is exited without waiting for all
+  // ISend to finish, hence we need to wait here
+  kernel().mpi_manager.wait_for_send();
+
   // check if any exceptions have been raised
   for ( thread tid = 0; tid < kernel().vp_manager.get_num_threads(); ++tid )
   {
