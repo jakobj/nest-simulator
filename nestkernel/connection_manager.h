@@ -40,6 +40,7 @@
 #include "nest_timeconverter.h"
 #include "nest_types.h"
 #include "source_table.h"
+#include "spike_data.h"
 #include "target_table.h"
 #include "target_table_devices.h"
 
@@ -77,6 +78,7 @@ public:
 
   void compute_target_data_buffer_size();
   void compute_compressed_secondary_recv_buffer_positions( const thread tid );
+  void collect_compressed_spike_data( const thread tid );
 
   /**
    * Add a connectivity rule, i.e. the respective ConnBuilderFactory.
@@ -388,6 +390,8 @@ public:
 
   void set_stdp_eps( const double stdp_eps );
 
+  const std::vector< SpikeData >& get_compressed_spike_data( const synindex syn_id, const index idx );
+
 private:
   size_t get_num_target_data( const thread tid ) const;
 
@@ -529,6 +533,8 @@ private:
    * Internally arranged in a 3d structure: threads|synapses|gids
    */
   SourceTable source_table_;
+
+  std::vector< std::vector< std::vector< SpikeData > > > compressed_spike_data_;
 
   /**
    * Stores absolute position in receive buffer of secondary events.
@@ -811,6 +817,12 @@ ConnectionManager::set_has_source_subsequent_targets( const thread tid,
   const bool subsequent_targets )
 {
   connections_[ tid ][ syn_id ]->set_has_source_subsequent_targets( lcid, subsequent_targets );
+}
+
+inline const std::vector< SpikeData >&
+ConnectionManager::get_compressed_spike_data( const synindex syn_id, const index idx )
+{
+  return compressed_spike_data_[ syn_id ][ idx ];
 }
 
 } // namespace nest
