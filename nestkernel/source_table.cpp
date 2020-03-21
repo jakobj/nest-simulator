@@ -60,6 +60,7 @@ nest::SourceTable::initialize()
     is_cleared_[ tid ] = false;
     saved_entry_point_[ tid ] = false;
     compressable_sources_[ tid ].resize( 0 );
+    compressed_spike_data_map_[ tid ].resize( 0 );
   } // of omp parallel
 }
 
@@ -366,8 +367,8 @@ nest::SourceTable::get_next_target_data( const thread tid,
         if ( current_source.is_compressed() )
         {
           target_fields.set_tid( MAX_TID );  // use MAX_TID as marker for compressed spikes
-          auto it_idx = compressed_spike_data_map_[ current_position.tid ].find( current_source.get_gid() );
-          if ( it_idx != compressed_spike_data_map_[ current_position.tid ].end() )
+          auto it_idx = compressed_spike_data_map_[ current_position.tid ][ current_position.syn_id ].find( current_source.get_gid() );
+          if ( it_idx != compressed_spike_data_map_[ current_position.tid ][ current_position.syn_id ].end() )
           {
             target_fields.set_lcid( it_idx->second.idx_ );
           }
@@ -492,8 +493,10 @@ nest::SourceTable::merge_compressable_sources()
 void
 nest::SourceTable::fill_compressed_spike_data( std::vector< std::vector< std::vector< SpikeData > > >& compressed_spike_data )
 {
+  compressed_spike_data.resize( kernel().model_manager.get_num_synapse_prototypes() );
   for ( thread tid = 0; tid < compressable_sources_.size(); ++tid )
   {
+    compressed_spike_data_map_[ tid ].resize( kernel().model_manager.get_num_synapse_prototypes(), std::map< index, CompressedSpikeData >() );
     for ( synindex syn_id = 0; syn_id < compressable_sources_[ tid ].size(); ++syn_id )
     {
       std::vector< SpikeData > spike_data;  // will hold all target positions on this process
@@ -505,7 +508,7 @@ nest::SourceTable::fill_compressed_spike_data( std::vector< std::vector< std::ve
         // add target position on this thread
         spike_data.push_back( it->second );
         sources_[ it->second.get_tid() ][ it->second.get_syn_id() ][ it->second.get_lcid() ].set_compressed( true );
-        compressed_spike_data_map_[ tid ].insert( std::make_pair( it->first, CompressedSpikeData( tid, compressed_spike_data[ syn_id ].size() ) ) );
+        compressed_spike_data_map_[ tid ][ syn_id ].insert( std::make_pair( it->first, CompressedSpikeData( tid, compressed_spike_data[ syn_id ].size() ) ) );
 
         // add target positions on all other threads
         for ( thread other_tid = tid + 1; other_tid < compressable_sources_.size(); ++other_tid )
