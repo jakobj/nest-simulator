@@ -80,6 +80,7 @@ nest::iaf_psc_exp::Parameters_::Parameters_()
   , tau_in_( 2.0 )           // in ms
   , rho_( 0.01 )             // in 1/s
   , delta_( 0.0 )            // in mV
+  , do_reset_after_spike_( true )
 {
 }
 
