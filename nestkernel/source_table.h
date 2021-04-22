@@ -120,12 +120,34 @@ private:
   bool previous_entry_has_same_source_( const SourceTablePosition& current_position,
     const Source& current_source ) const;
 
+  /**
+   * Fills the fields of a TargetData during construction of *
+   * presynaptic connection infrastructure.
+   */
   bool populate_target_data_fields_( const SourceTablePosition& current_position,
     const Source& current_source,
     const thread source_rank,
     TargetData& next_target_data ) const;
 
+  /**
+   * A structure to temporarily hold information about all process
+   * local targets will be addressed by incoming spikes. Data from
+   * this structure is transferred to the compressed_spike_data_
+   * structure of ConnectionManager during construction of the
+   * postsynaptic connection infrastructure. Arranged as a two
+   * dimensional vector (thread|synapse) with an inner map (source
+   * node id -> spike data).
+   */
   std::vector< std::vector< std::map< index, SpikeData > > > compressible_sources_;
+
+  /**
+   * A structure to temporarily store locations of "unpacked spikes"
+   * in the compressed_spike_data_ structure of
+   * ConnectionManager. Data from this structure is transferred to the
+   * presynaptic side during construction of the presynaptic
+   * connection infrastructure. Arranged as a two dimensional vector
+   * (thread|synapse) with an inner map (source node id -> index).
+   */
   std::vector< std::vector< std::map< index, size_t > > > compressed_spike_data_map_;
 
 public:

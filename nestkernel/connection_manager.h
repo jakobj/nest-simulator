@@ -318,7 +318,7 @@ public:
    */
   bool get_sort_connections_by_source() const;
 
-  bool get_use_compressed_spikes() const;
+  bool use_compressed_spikes() const;
 
   /**
    * Sorts connections in the presynaptic infrastructure by increasing
@@ -547,6 +547,11 @@ private:
    */
   SourceTable source_table_;
 
+  /**
+   * A structure to hold "unpacked" spikes on the postsynaptic side if
+   * spike compression is enabled. Internally arranged in a 3d
+   * structure: synapses|sources|spike data
+   */
   std::vector< std::vector< std::vector< SpikeData > > > compressed_spike_data_;
 
   /**
@@ -799,7 +804,7 @@ ConnectionManager::get_sort_connections_by_source() const
 }
 
 inline bool
-ConnectionManager::get_use_compressed_spikes() const
+ConnectionManager::use_compressed_spikes() const
 {
   return use_compressed_spikes_;
 }

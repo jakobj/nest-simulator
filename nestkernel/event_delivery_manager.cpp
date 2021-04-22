@@ -623,7 +623,7 @@ EventDeliveryManager::deliver_events_( const thread tid, const std::vector< Spik
       se.set_stamp( prepared_timestamps[ spike_data.get_lag() ] );
       se.set_offset( spike_data.get_offset() );
 
-      if ( not kernel().connection_manager.get_use_compressed_spikes() )
+      if ( not kernel().connection_manager.use_compressed_spikes() )
       {
         if ( spike_data.get_tid() == tid )
         {
@@ -638,8 +638,9 @@ EventDeliveryManager::deliver_events_( const thread tid, const std::vector< Spik
       else
       {
         const index syn_id = spike_data.get_syn_id();
-        const index idx =
-          spike_data.get_lcid(); // for compressed spikes lcid holds the index in the compressed_spike_data structure
+	// for compressed spikes lcid holds the index in the
+	// compressed_spike_data structure
+        const index idx = spike_data.get_lcid();
         const std::vector< SpikeData >& compressed_spike_data =
           kernel().connection_manager.get_compressed_spike_data( syn_id, idx );
         for ( auto it = compressed_spike_data.cbegin(); it != compressed_spike_data.cend(); ++it )

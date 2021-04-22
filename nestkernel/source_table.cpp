@@ -332,7 +332,7 @@ nest::SourceTable::populate_target_data_fields_( const SourceTablePosition& curr
 
     TargetDataFields& target_fields = next_target_data.target_data;
     target_fields.set_syn_id( current_position.syn_id );
-    if ( kernel().connection_manager.get_use_compressed_spikes() )
+    if ( kernel().connection_manager.use_compressed_spikes() )
     {
       // WARNING: we set the tid field here to zero just to make sure
       // it has a defined value; however, this value is _not_ used
@@ -466,17 +466,18 @@ nest::SourceTable::collect_compressible_sources( const thread tid )
   for ( synindex syn_id = 0; syn_id < sources_[ tid ].size(); ++syn_id )
   {
     index lcid = 0;
-    while ( lcid < sources_[ tid ][ syn_id ].size() )
+    auto& syn_sources = sources_[ tid ][ syn_id ];
+    while ( lcid < syn_sources.size() )
     {
+      const index old_source_node_id = syn_sources[ lcid ].get_node_id();
       const std::pair< index, SpikeData > source_node_id_to_spike_data =
-        std::make_pair( sources_[ tid ][ syn_id ][ lcid ].get_node_id(), SpikeData( tid, syn_id, lcid, 0 ) );
+        std::make_pair( old_source_node_id, SpikeData( tid, syn_id, lcid, 0 ) );
       compressible_sources_[ tid ][ syn_id ].insert( source_node_id_to_spike_data );
 
       // find next source with different node_id (assumes sorted sources)
-      const index old_source_node_id = sources_[ tid ][ syn_id ][ lcid ].get_node_id();
       ++lcid;
-      while ( ( lcid < sources_[ tid ][ syn_id ].size() )
-        and ( sources_[ tid ][ syn_id ][ lcid ].get_node_id() == old_source_node_id ) )
+      while ( ( lcid < syn_sources.size() )
+        and ( syn_sources[ lcid ].get_node_id() == old_source_node_id ) )
       {
         ++lcid;
       }
@@ -498,13 +499,14 @@ nest::SourceTable::fill_compressed_spike_data(
       kernel().model_manager.get_num_synapse_prototypes(), std::map< index, size_t >() );
   }
 
-  std::vector< SpikeData > spike_data; // will hold spike data
-                                       // (target positions) for each
-                                       // unique source on this
-                                       // process
-  size_t thread_idx = 0;               // pseudo-random thread selector to balance
-  // memory usage across threads of
-  // compressed_spike_data_map_
+  size_t thread_idx = 0; // pseudo-random thread selector to balance
+			 // memory usage across threads of
+			 // compressed_spike_data_map_
+
+  // for each local thread and each synapse type we will populate this
+  // vector with spike data containing information about all process
+  // local targets
+  std::vector< SpikeData > spike_data;
 
   for ( thread tid = 0; tid < static_cast< thread >( compressible_sources_.size() ); ++tid )
   {

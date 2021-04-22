@@ -1479,10 +1479,7 @@ nest::ConnectionManager::collect_compressed_spike_data( const thread tid )
 {
   if ( use_compressed_spikes_ )
   {
-    if ( not sort_connections_by_source_ )
-    {
-      throw KernelException( "Spike compression requires sort_connections_by_source to be true." );
-    }
+    assert( sort_connections_by_source_ );
 
 #pragma omp single
     {
