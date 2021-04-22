@@ -607,6 +607,12 @@ private:
   //! Whether to sort connections by source node ID.
   bool sort_connections_by_source_;
 
+  //! Whether to use spike compression; if a neuron has targets on
+  //! multiple threads of a process, this switch makes sure that only
+  //! a single packet is sent to the process instead of one packet per
+  //! target thread; requires sort_connections_by_source_ = true; for
+  //! more details see the discussion and sketch in
+  //! https://github.com/nest/nest-simulator/pull/1338
   bool use_compressed_spikes_;
 
   //! Whether primary connections (spikes) exist.
