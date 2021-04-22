@@ -476,8 +476,7 @@ nest::SourceTable::collect_compressible_sources( const thread tid )
 
       // find next source with different node_id (assumes sorted sources)
       ++lcid;
-      while ( ( lcid < syn_sources.size() )
-        and ( syn_sources[ lcid ].get_node_id() == old_source_node_id ) )
+      while ( ( lcid < syn_sources.size() ) and ( syn_sources[ lcid ].get_node_id() == old_source_node_id ) )
       {
         ++lcid;
       }
@@ -499,9 +498,9 @@ nest::SourceTable::fill_compressed_spike_data(
       kernel().model_manager.get_num_synapse_prototypes(), std::map< index, size_t >() );
   }
 
-  size_t thread_idx = 0; // pseudo-random thread selector to balance
-			 // memory usage across threads of
-			 // compressed_spike_data_map_
+  // pseudo-random thread selector to balance memory usage across
+  // threads of compressed_spike_data_map_
+  size_t thread_idx = 0;
 
   // for each local thread and each synapse type we will populate this
   // vector with spike data containing information about all process

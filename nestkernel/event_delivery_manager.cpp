@@ -638,8 +638,8 @@ EventDeliveryManager::deliver_events_( const thread tid, const std::vector< Spik
       else
       {
         const index syn_id = spike_data.get_syn_id();
-	// for compressed spikes lcid holds the index in the
-	// compressed_spike_data structure
+        // for compressed spikes lcid holds the index in the
+        // compressed_spike_data structure
         const index idx = spike_data.get_lcid();
         const std::vector< SpikeData >& compressed_spike_data =
           kernel().connection_manager.get_compressed_spike_data( syn_id, idx );
