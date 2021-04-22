@@ -47,8 +47,8 @@ class BasicsTestCase(unittest.TestCase):
         shape = [5, 4]
         nest.ResetKernel()
         layer = nest.Create('iaf_psc_alpha',
-                        params={'V_m': -55.0},
-                        positions=nest.spatial.grid(shape=shape))
+                            params={'V_m': -55.0},
+                            positions=nest.spatial.grid(shape=shape))
         layer_vm = layer.get('V_m')
         for vm in layer_vm:
             self.assertEqual(vm, -55.0)
@@ -87,7 +87,7 @@ class BasicsTestCase(unittest.TestCase):
         lshape = [5, 4]
         nest.ResetKernel()
         layer = nest.Create('iaf_psc_alpha',
-                        positions=nest.spatial.grid(shape=lshape))
+                            positions=nest.spatial.grid(shape=lshape))
 
         # node IDs -> node IDs, all displacements must be zero here
         d = nest.Displacement(layer, layer)
@@ -125,7 +125,7 @@ class BasicsTestCase(unittest.TestCase):
         # Test that we get correct results if to_arg and from_arg are from two
         # different layers
         layer2 = nest.Create('iaf_psc_alpha',
-                         positions=nest.spatial.grid(shape=lshape))
+                             positions=nest.spatial.grid(shape=lshape))
         d = nest.Displacement(layer[:1], layer2[4:5])
         dx = 1. / lshape[0]
         self.assertAlmostEqual(d[0][0], -dx, 3)
@@ -162,7 +162,7 @@ class BasicsTestCase(unittest.TestCase):
         lshape = [5, 4]
         nest.ResetKernel()
         layer = nest.Create('iaf_psc_alpha',
-                        positions=nest.spatial.grid(shape=lshape))
+                            positions=nest.spatial.grid(shape=lshape))
 
         # node IDs -> node IDs, all displacements must be zero here
         d = nest.Distance(layer, layer)
@@ -204,7 +204,7 @@ class BasicsTestCase(unittest.TestCase):
         # Test that we get correct results if to_arg and from_arg are from two
         # different layers
         layer2 = nest.Create('iaf_psc_alpha',
-                         positions=nest.spatial.grid(shape=lshape))
+                             positions=nest.spatial.grid(shape=lshape))
         d = nest.Distance(layer[:1], layer2[4:5])
         dx = 1. / lshape[0]
         self.assertAlmostEqual(d[0], dx, 3)
@@ -249,7 +249,7 @@ class BasicsTestCase(unittest.TestCase):
         # nodes at [-1,0,1]x[-1,0,1], column-wise
         nest.ResetKernel()
         layer = nest.Create('iaf_psc_alpha',
-                        positions=nest.spatial.grid(shape=[3, 3], extent=(3., 3.)))
+                            positions=nest.spatial.grid(shape=[3, 3], extent=(3., 3.)))
 
         # single location at center
         n = nest.FindNearestElement(layer, (0., 0.))
@@ -285,7 +285,7 @@ class BasicsTestCase(unittest.TestCase):
         # nodes at [-1,0,1]x[-1,0,1], column-wise
         nest.ResetKernel()
         layer = nest.Create('iaf_psc_alpha',
-                        positions=nest.spatial.grid(shape=[3, 3], extent=(2., 2.)))
+                            positions=nest.spatial.grid(shape=[3, 3], extent=(2., 2.)))
 
         # single layer
         n = nest.FindCenterElement(layer)
@@ -308,9 +308,9 @@ class BasicsTestCase(unittest.TestCase):
         nest.SetKernelStatus({'sort_connections_by_source': False, 'use_compressed_spikes': False})
 
         layer = nest.Create('iaf_psc_alpha',
-                        positions=nest.spatial.grid(shape=[3, 3],
-                                                    extent=(2., 2.),
-                                                    edge_wrap=True))
+                            positions=nest.spatial.grid(shape=[3, 3],
+                                                        extent=(2., 2.),
+                                                        edge_wrap=True))
 
         # connect layer -> layer
         nest.Connect(layer, layer, cdict, sdict)
@@ -355,9 +355,9 @@ class BasicsTestCase(unittest.TestCase):
         nest.SetKernelStatus({'sort_connections_by_source': False, 'use_compressed_spikes': False})
 
         layer = nest.Create('iaf_psc_alpha',
-                        positions=nest.spatial.grid(shape=[1, 1],
-                                                    extent=(1., 1.),
-                                                    edge_wrap=False))
+                            positions=nest.spatial.grid(shape=[1, 1],
+                                                        extent=(1., 1.),
+                                                        edge_wrap=False))
         nest.Connect(layer, layer, cdict, sdict)
 
         # Simple test with one node ID in the layer, should be placed in the origin
@@ -373,9 +373,9 @@ class BasicsTestCase(unittest.TestCase):
         shape = [3, 3]
 
         layer = nest.Create('iaf_psc_alpha',
-                        positions=nest.spatial.grid(shape=shape,
-                                                    extent=[x_extent, y_extent],
-                                                    edge_wrap=False))
+                            positions=nest.spatial.grid(shape=shape,
+                                                        extent=[x_extent, y_extent],
+                                                        edge_wrap=False))
         nest.Connect(layer, layer, cdict, sdict)
 
         p = nest.GetTargetPositions(layer[:1], layer)
@@ -407,8 +407,8 @@ class BasicsTestCase(unittest.TestCase):
         positions = [(np.random.uniform(-0.5, 0.5),
                       np.random.uniform(-0.5, 0.5)) for _ in range(50)]
         layer = nest.Create('iaf_psc_alpha',
-                        positions=nest.spatial.free(positions,
-                                                    edge_wrap=False))
+                            positions=nest.spatial.free(positions,
+                                                        edge_wrap=False))
         nest.Connect(layer, layer, cdict, sdict)
 
         p = nest.GetTargetPositions(layer[:1], layer)
